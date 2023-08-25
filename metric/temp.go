@@ -1,4 +1,4 @@
-package main
+package metric
 
 import (
 	"os"
@@ -16,25 +16,25 @@ const (
 )
 
 type TempDevice struct {
-	name  string
-	temps []*TempInput
+	Name  string
+	Temps []*TempInput
 }
 
 func (h *TempDevice) getTempById(id int) *TempInput {
-	for _, t := range h.temps {
-		if t.id == id {
+	for _, t := range h.Temps {
+		if t.Id == id {
 			return t
 		}
 	}
-	t := &TempInput{id: id}
-	h.temps = append(h.temps, t)
+	t := &TempInput{Id: id}
+	h.Temps = append(h.Temps, t)
 	return t
 }
 
 type TempInput struct {
-	id    int
-	label string
-	input int
+	Id    int
+	Label string
+	Input int
 }
 
 func LoadTemps() []*TempDevice {
@@ -46,7 +46,7 @@ func LoadTemps() []*TempDevice {
 	}
 
 	for _, hw := range hws {
-		record := &TempDevice{temps: make([]*TempInput, 0)}
+		record := &TempDevice{Temps: make([]*TempInput, 0)}
 		data, err := os.ReadDir(filepath.Join(pathHwmon, hw.Name()))
 		if err != nil {
 			continue
@@ -55,22 +55,22 @@ func LoadTemps() []*TempDevice {
 		for _, f := range data {
 			if f.Name() == hwmonName {
 				bName, _ := os.ReadFile(filepath.Join(pathHwmon, hw.Name(), f.Name()))
-				record.name = strings.TrimSpace(string(bName))
+				record.Name = strings.TrimSpace(string(bName))
 			} else if strings.HasPrefix(f.Name(), hwmonTempPrefix) {
 				idEnd := strings.Index(f.Name(), "_")
 				id, _ := strconv.Atoi(f.Name()[4:idEnd])
 				temp := record.getTempById(id)
 				if strings.HasSuffix(f.Name(), hwmonTempLabel) {
 					bLabel, _ := os.ReadFile(filepath.Join(pathHwmon, hw.Name(), f.Name()))
-					temp.label = strings.TrimSpace(string(bLabel))
+					temp.Label = strings.TrimSpace(string(bLabel))
 				} else if strings.HasSuffix(f.Name(), hwmonTempInput) {
 					bInput, _ := os.ReadFile(filepath.Join(pathHwmon, hw.Name(), f.Name()))
 					input, _ := strconv.Atoi(strings.TrimSpace(string(bInput)))
-					temp.input = input
+					temp.Input = input
 				}
 			}
 		}
-		if len(record.temps) > 0 {
+		if len(record.Temps) > 0 {
 			result = append(result, record)
 		}
 	}

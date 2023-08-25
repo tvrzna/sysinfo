@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/tvrzna/sysinfo/metric"
 )
 
 type SysinfoDomain struct {
@@ -57,24 +59,24 @@ type DiskUsageDomain struct {
 func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	result := SysinfoDomain{}
 
-	pCpu := LoadCpu()
+	pCpu := metric.LoadCpu()
 	time.Sleep(200 * time.Millisecond)
-	cCpu := LoadCpu()
-	cpufreq := LoadCpufreq()
-	loadavg := GetLoadavg()
-	mem := LoadMemInfo()
-	temps := LoadTemps()
-	diskusage := LoadDiskUsage()
-	uptime := LoadUptime()
+	cCpu := metric.LoadCpu()
+	cpufreq := metric.LoadCpufreq()
+	loadavg := metric.GetLoadavg()
+	mem := metric.LoadMemInfo()
+	temps := metric.LoadTemps()
+	diskusage := metric.LoadDiskUsage()
+	uptime := metric.LoadUptime()
 
 	// Set CPU
 	result.CPU = CpuDomain{
-		Cores: make([]CpuCoreDomain, len(pCpu.cores)),
+		Cores: make([]CpuCoreDomain, len(pCpu.Cores)),
 	}
 	for i := 0; i < len(result.CPU.Cores); i++ {
 		result.CPU.Cores[i] = CpuCoreDomain{
 			Id:    cpufreq[i].Processor,
-			Usage: cCpu.cores[i].Usage(pCpu.cores[i]),
+			Usage: cCpu.Cores[i].Usage(pCpu.Cores[i]),
 			MHz:   cpufreq[i].Freq,
 		}
 	}
@@ -91,9 +93,9 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	// Set temps
 	result.Temps = make([]TempDeviceDomain, 0)
 	for _, t := range temps {
-		device := TempDeviceDomain{Name: t.name, Sensors: make([]TempSensorDomain, 0)}
-		for _, s := range t.temps {
-			device.Sensors = append(device.Sensors, TempSensorDomain{Name: s.label, Temp: float32(s.input) / 1000})
+		device := TempDeviceDomain{Name: t.Name, Sensors: make([]TempSensorDomain, 0)}
+		for _, s := range t.Temps {
+			device.Sensors = append(device.Sensors, TempSensorDomain{Name: s.Label, Temp: float32(s.Input) / 1000})
 		}
 		result.Temps = append(result.Temps, device)
 	}

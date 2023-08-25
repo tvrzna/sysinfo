@@ -1,4 +1,4 @@
-package main
+package metric
 
 import (
 	"bufio"
@@ -24,7 +24,7 @@ type Cpu struct {
 	steal      int64
 	guest      int64
 	guest_nice int64
-	cores      []*Cpu
+	Cores      []*Cpu
 }
 
 func (c *Cpu) Usage(previous *Cpu) float32 {
@@ -53,9 +53,9 @@ func LoadCpu() *Cpu {
 			data := strings.Split(strings.ReplaceAll(line, "  ", " "), " ")
 			if len(data[0]) == 3 {
 				result = cpu
-				result.cores = make([]*Cpu, 0)
+				result.Cores = make([]*Cpu, 0)
 			} else {
-				result.cores = append(result.cores, cpu)
+				result.Cores = append(result.Cores, cpu)
 				id, _ := strconv.Atoi(data[0][3:])
 				cpu.id = &id
 			}

@@ -1,4 +1,4 @@
-package main
+package metric
 
 // #include <stdlib.h>
 import "C"
