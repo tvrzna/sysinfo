@@ -31,7 +31,6 @@ type CpuCoreDomain struct {
 type MemoryDomain struct {
 	Used  float32 `json:"used"`
 	Total float32 `json:"total"`
-	Usage float32 `json:"usage"`
 }
 
 type LoadavgDomain struct {
@@ -83,9 +82,7 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 
 	// Set RAM & Swap
 	result.RAM = MemoryDomain{Used: mem.MemTotalGB() - mem.MemAvailableGB(), Total: mem.MemTotalGB()}
-	result.RAM.Usage = result.RAM.Used / result.RAM.Total * 100
 	result.SWAP = MemoryDomain{Used: mem.SwapTotalGB() - mem.SwapFreeGB(), Total: mem.SwapTotalGB()}
-	result.SWAP.Usage = result.SWAP.Used / result.SWAP.Total * 100
 
 	// Set Loadavgs
 	result.Loadavg = LoadavgDomain{Loadavg1: loadavg.Loadavg1, Loadavg5: loadavg.Loadavg5, Loadavg15: loadavg.Loadavg15}

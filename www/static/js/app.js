@@ -41,12 +41,12 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 				context.sysinfo.memory = [
 					{
 						label: context.data.ram.used.toFixed(1) + '/' + context.data.ram.total.toFixed(1) + ' G',
-						percent: context.data.ram.usage,
+						percent: context.data.ram.used / context.data.ram.total * 100,
 						legend: 'RAM'
 					},
 					{
 						label: context.data.swap.used.toFixed(1) + '/' + context.data.swap.total.toFixed(1) + ' G',
-						percent: context.data.swap.usage,
+						percent: context.data.swap.used / context.data.swap.total * 100,
 						legend: 'SWAP'
 					},
 				];
