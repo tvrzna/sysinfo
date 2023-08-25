@@ -1,24 +1,11 @@
 package main
 
 import (
-	"embed"
-	"io/fs"
-	"log"
-	"net/http"
+	"os"
 )
 
-var buildVersion string
-
-//go:embed www
-var www embed.FS
-
 func main() {
-	serverRoot, err := fs.Sub(www, "www")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	http.Handle("/", http.FileServer(http.FS(serverRoot)))
-	http.HandleFunc("/sysinfo.json", HandleSysinfoData)
-	http.ListenAndServe(":1700", nil)
+	c := newContext(loadConfig(os.Args))
+	go c.runWebServer()
+	c.handleStop()
 }

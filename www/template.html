@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html ajsf="sysinfo">
 	<head>
-		<title>sysinfo</title>
+		<title>{{ .Name }}</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-		<link rel="stylesheet" type="text/css" href="style/style.css" />
-		<script type="text/javascript" src="js/nunjs.min.js"></script>
-		<script type="text/javascript" src="js/ajsf.min.js"></script>
-		<script type="text/javascript" src="js/app.js"></script>
+		<link rel="stylesheet" type="text/css" href='{{.UrlFor "static/style/style.css" }}' />
+		<script type="text/javascript" src='{{.UrlFor "static/js/nunjs.min.js" }}'></script>
+		<script type="text/javascript" src='{{.UrlFor "static/js/ajsf.min.js" }}'></script>
+		<script type="text/javascript" src='{{.UrlFor "static/js/app.js" }}'></script>
 	</head>
 	<body>
+		<h1>{{ .Name }}</h1>
 		<div>
 			<p>CPU</p>
 			<div class="cpu-cores">
@@ -36,5 +37,6 @@
 			<span ajsf-text="sysinfo.loadavg5"></span>
 			<span ajsf-text="sysinfo.loadavg15"></span>
 		</div>
+		<div id="footer">Powered by <a href="https://github.com/tvrzna/sysinfo" target="_blank">sysinfo</a> {{.Version}}</div>
 	</body>
 </html>
