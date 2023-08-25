@@ -7,11 +7,12 @@ import (
 )
 
 type SysinfoDomain struct {
-	CPU     CpuDomain          `json:"cpu"`
-	RAM     MemoryDomain       `json:"ram"`
-	SWAP    MemoryDomain       `json:"swap"`
-	Loadavg LoadavgDomain      `json:"loadavg"`
-	Temps   []TempDeviceDomain `json:"temps"`
+	CPU       CpuDomain          `json:"cpu"`
+	RAM       MemoryDomain       `json:"ram"`
+	SWAP      MemoryDomain       `json:"swap"`
+	Loadavg   LoadavgDomain      `json:"loadavg"`
+	Temps     []TempDeviceDomain `json:"temps"`
+	DiskUsage []DiskUsageDomain  `json:"diskusage"`
 }
 
 type CpuDomain struct {
@@ -46,6 +47,12 @@ type TempSensorDomain struct {
 	Temp float32 `json:"temp"`
 }
 
+type DiskUsageDomain struct {
+	Path    string  `json:"path"`
+	UsedGB  float64 `json:"usedgb"`
+	TotalGB float64 `json:"totalgb"`
+}
+
 func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	result := SysinfoDomain{}
 
@@ -56,6 +63,7 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	loadavg := GetLoadavg()
 	mem := LoadMemInfo()
 	temps := LoadTemps()
+	diskusage := LoadDiskUsage()
 
 	// Set CPU
 	result.CPU = CpuDomain{
@@ -86,6 +94,12 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 			device.Sensors = append(device.Sensors, TempSensorDomain{Name: s.label, Temp: float32(s.input) / 1000})
 		}
 		result.Temps = append(result.Temps, device)
+	}
+
+	// Set diskusage
+	result.DiskUsage = make([]DiskUsageDomain, 0)
+	for _, d := range diskusage {
+		result.DiskUsage = append(result.DiskUsage, DiskUsageDomain{Path: d.Path, UsedGB: float64(d.UsedSize) / 1024 / 1024 / 1024, TotalGB: float64(d.TotalSize) / 1024 / 1024 / 1024})
 	}
 
 	w.Header().Set("content-type", "application/json")

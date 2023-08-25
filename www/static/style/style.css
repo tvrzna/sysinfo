@@ -50,17 +50,16 @@ body {
 
 #boxes .box {
 	flex: 2;
-	min-width: 75rem;
 }
 
 #boxes .half-box {
 	flex: 1;
-	min-width: 32.5rem;
 }
 
 #boxes .box, #boxes .half-box {
 	border: thin solid #FFFFFF10;
 	padding: 0.25rem;
+	min-width: 32.5rem;
 }
 
 .circle {
@@ -91,11 +90,13 @@ body {
 }
 
 .circle > .circle-legend {
-	position: absolute;
 	font-size: min(0.875rem, calc(var(--size)/4));
+	left: 0;
 	max-width: var(--size);
 	overflow: hidden;
+	position: absolute;
 	text-overflow: ellipsis;
+	top: 0;
 	white-space: nowrap;
 }
 
@@ -153,6 +154,7 @@ bar {
 .temps {
 	display: flex;
 	gap: .5rem;
+	justify-content: center;
 }
 
 .temps > div {
@@ -169,4 +171,10 @@ bar {
 .temps > div > .temp-sensors {
 	display: flex;
 	column-gap: 0.25rem;
+}
+
+.diskusage {
+	align-items: center;
+	display: flex;
+	justify-content: center;
 }

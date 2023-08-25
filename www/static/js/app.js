@@ -4,7 +4,8 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 			cores: []
 		},
 		memory: [],
-		tempDevices: []
+		tempDevices: [],
+		diskusage: []
 	};
 
 	var lock = false;
@@ -70,10 +71,19 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					};
 					for (var j = 0; j < context.data.temps[i].sensors.length; j++) {
 						context.sysinfo.tempDevices[i].temps[j] = {
-							label: context.data.temps[i].sensors[j].temp.toFixed(0) + "°C",
+							label: context.data.temps[i].sensors[j].temp.toFixed(0) + '°C',
 							legend: context.data.temps[i].sensors[j].name,
 							percent: context.data.temps[i].sensors[j].temp/130*100
 						};
+					}
+				}
+
+				context.sysinfo.diskusage = [];
+				for (var i = 0; i < context.data.diskusage.length; i++) {
+					context.sysinfo.diskusage[i] = {
+						label: context.data.diskusage[i].usedgb.toFixed(0) + '/' + context.data.diskusage[i].totalgb.toFixed(0) + ' G',
+						legend: context.data.diskusage[i].path,
+						percent: context.data.diskusage[i].usedgb/context.data.diskusage[i].totalgb*100
 					}
 				}
 
