@@ -7,12 +7,36 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 		tempDevices: []
 	};
 
+	var lock = false;
+	var loadingOverlay = $(rootElement).find('.loading-spinner');
+
+	context.addLoading = (count) => {
+		if (count == undefined) {
+			count = 1;
+		}
+		context.loading += count;
+
+		if (context.loading > 0) {
+			setTimeout(() => {
+				if (context.loading > 0) {
+					loadingOverlay[0].style.display = 'flex';
+				}
+			}, 250)
+		} else {
+			loadingOverlay[0].style.display = 'none';
+			context.loading = 0;
+		}
+	};
+
 	context.loadData = () => {
+		if (lock) {
+			return;
+		}
+		lock = true;
+		context.addLoading();
 		$.get('sysinfo.json', {
 			success: data => {
 				context.data = JSON.parse(data);
-
-
 				context.sysinfo.memory = [
 					{
 						label: context.data.ram.used.toFixed(1) + '/' + context.data.ram.total.toFixed(1) + ' G',
@@ -57,6 +81,10 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 			},
 			error: () => {
 				console.log('Could not load sysinfo');
+			},
+			complete: () => {
+				context.addLoading(-1);
+				lock = false;
 			}
 		});
 	};

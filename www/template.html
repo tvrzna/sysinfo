@@ -7,11 +7,11 @@
 		<link rel="stylesheet" type="text/css" href='{{.UrlFor "static/style/style.css" }}' />
 		<script type="text/javascript" src='{{.UrlFor "static/js/nunjs.min.js" }}'></script>
 		<script type="text/javascript" src='{{.UrlFor "static/js/ajsf.min.js" }}'></script>
-		<script type="text/javascript" src='{{.UrlFor "static/js/app.js" }}'></script>
 	</head>
 	<body>
 		<div id="header">
 			<h1>{{ .Name }}</h1>
+			<div class="loading-spinner"></div>
 		</div>
 		<div id="boxes">
 			<div class="half-box">
@@ -50,5 +50,6 @@
 			</div>
 		</div>
 		<div id="footer">Powered by <a href="https://github.com/tvrzna/sysinfo" target="_blank">sysinfo</a> {{.Version}}</div>
+		<script type="text/javascript" src='{{.UrlFor "static/js/app.js" }}'></script>
 	</body>
 </html>
