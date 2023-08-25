@@ -10,32 +10,37 @@
 		<script type="text/javascript" src='{{.UrlFor "static/js/app.js" }}'></script>
 	</head>
 	<body>
-		<h1>{{ .Name }}</h1>
-		<div>
-			<p>CPU</p>
-			<div class="cpu-cores">
-				<bar ajsf-repeat="sysinfo.cpu.cores" ajsf-model="item"></bar>
-			</div>
+		<div id="header">
+			<h1>{{ .Name }}</h1>
 		</div>
-		<div>
-			<p>RAM &amp; SWAP</p>
-			<circle ajsf-model="sysinfo.ram" size="10"></circle>
-			<circle ajsf-model="sysinfo.swap" size="5"></circle>
-		</div>
-		<div>
-			<p>Temps</p>
-			<div ajsf-repeat="sysinfo.tempDevices">
-				<p><span ajsf-text="item.name"></span></p>
-				<div class="temps">
-					<circle ajsf-repeat="item.temps" ajsf-model="item" size="3"></circle>
+		<div id="boxes">
+			<div class="half-box">
+				<div class="cpu-cores">
+					<bar ajsf-repeat="sysinfo.cpu.cores" ajsf-model="item"></bar>
 				</div>
 			</div>
-		</div>
-		<div>
-			<p>loadavg</p>
-			<span ajsf-text="sysinfo.loadavg1"></span>
-			<span ajsf-text="sysinfo.loadavg5"></span>
-			<span ajsf-text="sysinfo.loadavg15"></span>
+			<div class="half-box">
+				<div>
+					Load Average:
+					<span ajsf-text="sysinfo.loadavg1"></span>
+					<span ajsf-text="sysinfo.loadavg5"></span>
+					<span ajsf-text="sysinfo.loadavg15"></span>
+				</div>
+			</div>
+			<div class="half-box">
+				<div class="memory">
+					<bar ajsf-model="sysinfo.ram"></bar>
+					<bar ajsf-model="sysinfo.swap"></bar>
+				</div>
+			</div>
+			<div class="half-box">
+				<div ajsf-repeat="sysinfo.tempDevices">
+					<span ajsf-text="item.name"></span>
+					<div class="temps">
+						<circle ajsf-repeat="item.temps" ajsf-model="item" size="3"></circle>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div id="footer">Powered by <a href="https://github.com/tvrzna/sysinfo" target="_blank">sysinfo</a> {{.Version}}</div>
 	</body>

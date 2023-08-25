@@ -26,7 +26,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 
 				for (var i = 0; i < context.data.cpu.cores.length; i++) {
 					context.sysinfo.cpu.cores[i] = {
-						identifier: context.data.cpu.cores[i].id,
+						legend: context.data.cpu.cores[i].id,
 						percent: context.data.cpu.cores[i].usage,
 						label: context.data.cpu.cores[i].usage.toFixed(0) + '% ' + context.data.cpu.cores[i].mhz.toFixed(0) + 'MHz'
 					};
@@ -71,7 +71,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 	};
 
 	context.loadData();
-	setInterval(context.loadData, 1000);
+	// setInterval(context.loadData, 1000);
 });
 
 app.directive('circle',`<div class="circle"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {
@@ -92,13 +92,20 @@ app.directive('circle',`<div class="circle"><div class="circle-inner" ajsf-text=
 	};
 });
 
-app.directive('bar', `<div class="bar"><div class="bar-inner" ajsf-text="model.identifier"></div><span class="bar-label" ajsf-text="model.label"></span></div>`, (context, el) => {
-	if (context.model.fgColor == undefined) {
-		context.model.fgColor = "#008800";
-	}
-	if (context.model.bgColor == undefined) {
-		context.model.bgColor = "#888888";
-	}
+app.directive('bar', `<div class="bar"><span class="bar-legend" ajsf-text="model.legend"></span><div class="bar-inner"></div><span class="bar-label" ajsf-text="model.label"></span></div>`, (context, el) => {
+	context.onRefresh = () => {
+		if (context.model.fgColor == undefined) {
+			context.model.fgColor = "#008800";
+		}
+		if (context.model.bgColor == undefined) {
+			context.model.bgColor = "#888888";
+		}
 
-	$(el).find('.bar').attr('style', "--progress: " + context.model.percent + "%; --fgColor: " + context.model.fgColor + "; --bgColor: " + context.model.bgColor + ";");
+		var size = $(el).attr("size");
+			if (size == undefined) {
+				size = 6
+			}
+
+		$(el).find('.bar').attr('style', "--progress: " + context.model.percent + "%; --fgColor: " + context.model.fgColor + "; --bgColor: " + context.model.bgColor + "; --size: " + size + "rem;");
+	};
 });
