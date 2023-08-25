@@ -10,3 +10,5 @@ Options:
 	-p, --port [PORT]			sets port for listening
 	-a, --app-url [APP_URL]		application url (if behind proxy)
 ```
+
+![](screenshot.png)
