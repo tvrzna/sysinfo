@@ -20,20 +20,25 @@
 				</div>
 			</div>
 			<div class="half-box">
+				TODO: disk usage
+			</div>
+			<div class="half-box">
+				<div class="memory">
+					<bar ajsf-repeat="sysinfo.memory" ajsf-model="item"></bar>
+				</div>
+			</div>
+			<div class="half-box">
 				<div>
 					Load Average:
 					<span ajsf-text="sysinfo.loadavg1"></span>
 					<span ajsf-text="sysinfo.loadavg5"></span>
 					<span ajsf-text="sysinfo.loadavg15"></span>
 				</div>
-			</div>
-			<div class="half-box">
-				<div class="memory">
-					<bar ajsf-model="sysinfo.ram"></bar>
-					<bar ajsf-model="sysinfo.swap"></bar>
+				<div>
+					Uptime: TODO: implement
 				</div>
 			</div>
-			<div class="half-box">
+			<div class="box">
 				<div ajsf-repeat="sysinfo.tempDevices">
 					<span ajsf-text="item.name"></span>
 					<div class="temps">

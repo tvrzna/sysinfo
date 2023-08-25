@@ -3,12 +3,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 		cpu: {
 			cores: []
 		},
-		ram: {
-			fgColor: 'green'
-		},
-		swap: {
-			fgColor: 'red'
-		},
+		memory: [],
 		tempDevices: []
 	};
 
@@ -17,12 +12,19 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 			success: data => {
 				context.data = JSON.parse(data);
 
-				context.sysinfo.ram.label = context.data.ram.used.toFixed(1) + '/' + context.data.ram.total.toFixed(1) + ' G';
-				context.sysinfo.ram.percent = context.data.ram.usage;
-				context.sysinfo.ram.legend = "RAM";
-				context.sysinfo.swap.label = context.data.swap.used.toFixed(1) + '/' + context.data.swap.total.toFixed(1) + ' G';
-				context.sysinfo.swap.percent = context.data.swap.usage;
-				context.sysinfo.swap.legend = "SWAP";
+
+				context.sysinfo.memory = [
+					{
+						label: context.data.ram.used.toFixed(1) + '/' + context.data.ram.total.toFixed(1) + ' G',
+						percent: context.data.ram.usage,
+						legend: 'RAM'
+					},
+					{
+						label: context.data.swap.used.toFixed(1) + '/' + context.data.swap.total.toFixed(1) + ' G',
+						percent: context.data.swap.usage,
+						legend: 'SWAP'
+					},
+				];
 
 				for (var i = 0; i < context.data.cpu.cores.length; i++) {
 					context.sysinfo.cpu.cores[i] = {
@@ -71,7 +73,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 	};
 
 	context.loadData();
-	// setInterval(context.loadData, 1000);
+	setInterval(context.loadData, 1000);
 });
 
 app.directive('circle',`<div class="circle"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {
@@ -80,7 +82,7 @@ app.directive('circle',`<div class="circle"><div class="circle-inner" ajsf-text=
 			context.model.fgColor = "#008800";
 		}
 		if (context.model.bgColor == undefined) {
-			context.model.bgColor = "#888888";
+			context.model.bgColor = "#FFFFFF10";
 		}
 
 		var size = $(el).attr("size");
@@ -98,7 +100,7 @@ app.directive('bar', `<div class="bar"><span class="bar-legend" ajsf-text="model
 			context.model.fgColor = "#008800";
 		}
 		if (context.model.bgColor == undefined) {
-			context.model.bgColor = "#888888";
+			context.model.bgColor = "#FFFFFF10";
 		}
 
 		var size = $(el).attr("size");
