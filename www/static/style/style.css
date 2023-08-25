@@ -115,3 +115,23 @@ bar {
 .cpu-cores bar {
 	flex: 50%;
 }
+
+.temps {
+	display: flex;
+	gap: .5rem;
+}
+
+.temps > div {
+	display: flex;
+	flex-direction: column;
+	margin-right: 0.5rem;
+}
+
+.temps > div > span {
+	font-weight: bold;
+	padding-bottom: 0.5rem;
+}
+
+.temps > div > .temp-sensors {
+	display: flex;
+}

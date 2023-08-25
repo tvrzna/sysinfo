@@ -39,10 +39,12 @@
 				</div>
 			</div>
 			<div class="box">
-				<div ajsf-repeat="sysinfo.tempDevices">
-					<span ajsf-text="item.name"></span>
-					<div class="temps">
-						<circle ajsf-repeat="item.temps" ajsf-model="item" size="3"></circle>
+				<div class="temps">
+					<div ajsf-repeat="sysinfo.tempDevices">
+						<span ajsf-text="item.name"></span>
+						<div class="temp-sensors">
+							<circle ajsf-repeat="item.temps" ajsf-model="item" size="3"></circle>
+						</div>
 					</div>
 				</div>
 			</div>
