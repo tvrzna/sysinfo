@@ -104,7 +104,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 	setInterval(context.loadData, 1000);
 });
 
-app.directive('circle',`<div class="circle"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {
+app.directive('circle',`<div class="circle" ajsf-title="model.legend | suffix ' '| suffix model.label"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {
 	context.onRefresh = () => {
 		if (context.model.fgColor == undefined) {
 			context.model.fgColor = context.model.percent <= 40 ? "#008800" : (context.model.percent <= 80 ? "#888800" : "#880000");
@@ -122,7 +122,7 @@ app.directive('circle',`<div class="circle"><div class="circle-inner" ajsf-text=
 	};
 });
 
-app.directive('bar', `<div class="bar"><span class="bar-legend" ajsf-text="model.legend"></span><div class="bar-inner"></div><span class="bar-label" ajsf-text="model.label"></span></div>`, (context, el) => {
+app.directive('bar', `<div class="bar" ajsf-title="model.legend | suffix ' '| suffix model.label"><span class="bar-legend" ajsf-text="model.legend"></span><div class="bar-inner"></div><span class="bar-label" ajsf-text="model.label"></span></div>`, (context, el) => {
 	context.onRefresh = () => {
 		if (context.model.fgColor == undefined) {
 			context.model.fgColor = context.model.percent <= 40 ? "#008800" : (context.model.percent <= 80 ? "#888800" : "#880000");

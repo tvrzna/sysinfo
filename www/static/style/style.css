@@ -93,6 +93,10 @@ body {
 .circle > .circle-legend {
 	position: absolute;
 	font-size: min(0.875rem, calc(var(--size)/4));
+	max-width: var(--size);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 bar {
@@ -164,4 +168,5 @@ bar {
 
 .temps > div > .temp-sensors {
 	display: flex;
+	column-gap: 0.25rem;
 }
