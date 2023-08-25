@@ -27,11 +27,11 @@ type Cpu struct {
 	cores      []*Cpu
 }
 
-func (c *Cpu) Usage(previous *Cpu) int {
+func (c *Cpu) Usage(previous *Cpu) float32 {
 	if previous != nil {
 		total := c.user + c.nice + c.system + c.idle
 		totalPrevious := previous.user + previous.nice + previous.system + previous.idle
-		return int(100 * (total - totalPrevious + previous.idle - c.idle) / (total - totalPrevious))
+		return float32(100 * (total - totalPrevious + previous.idle - c.idle) / (total - totalPrevious))
 	}
 	return 0
 }

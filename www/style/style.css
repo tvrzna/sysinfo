@@ -1,0 +1,82 @@
+html {
+	font-size: 16px;
+	font-family: monospace;
+}
+
+body {
+	--background: #f0f0f0;
+	background-color: var(--background);
+	color: #333;
+	font-size: 1rem;
+	margin: 0;
+}
+
+.circle {
+	border-radius: 50%;
+	background: conic-gradient(var(--fgColor) calc(calc(var(--progress) / 100) * 360deg), var(--bgColor) calc(calc(var(--progress) / 100) * 360deg));
+	width: var(--size);
+	height: var(--size);
+	position: relative;
+	cursor: default;
+	display: inline-block;
+	user-select: none;
+}
+
+.circle > .circle-inner {
+	--padding: calc(var(--size)/10);
+	border-radius: 50%;
+	background: var(--background);
+	box-sizing: border-box;
+	position: absolute;
+	top: var(--padding);
+	right: var(--padding);
+	bottom: var(--padding);
+	left: var(--padding);
+	display: grid;
+	justify-content: center;
+	justify-items: center;
+	place-content: center;
+	font-size: max(0.5625rem, calc(var(--size)/9));
+}
+
+.circle .circle-legend {
+	position: absolute;
+	font-size: min(0.875rem, calc(var(--size)/4));
+}
+
+.bar {
+	background-color: var(--bgColor);
+	padding: 0.25rem;
+	position: relative;
+	text-align: right;
+	user-select: none;
+}
+
+.bar > .bar-inner {
+	align-items: center;
+	background-color: var(--fgColor);
+	bottom: 0;
+	display: flex;
+	left: 0;
+	position: absolute;
+	text-align: left;
+	top: 0;
+	width: var(--progress);
+}
+
+.bar > .bar-label {
+	position: relative;
+	z-index: 1;
+}
+
+.cpu-cores {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+}
+
+.cpu-cores bar {
+	flex: 50%;
+	display: block;
+	width: 50%;
+}
