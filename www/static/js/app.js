@@ -87,6 +87,12 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					}
 				}
 
+				var days = Math.floor(context.data.uptime / 60 / 60 / 24);
+				var hours = Math.floor((context.data.uptime / 60 / 60)) - days * 24;
+				var minutes = Math.floor(context.data.uptime / 60) - (days * 24 + hours) * 60;
+				var seconds = context.data.uptime - ((days * 24 + hours) * 60 + minutes) * 60;
+				context.sysinfo.uptime = (days > 0 ? days + ' days, ' : '') + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+
 				context.makeRefresh();
 			},
 			error: () => {

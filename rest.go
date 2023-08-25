@@ -13,6 +13,7 @@ type SysinfoDomain struct {
 	Loadavg   LoadavgDomain      `json:"loadavg"`
 	Temps     []TempDeviceDomain `json:"temps"`
 	DiskUsage []DiskUsageDomain  `json:"diskusage"`
+	Uptime    uint64             `json:"uptime"`
 }
 
 type CpuDomain struct {
@@ -64,6 +65,7 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	mem := LoadMemInfo()
 	temps := LoadTemps()
 	diskusage := LoadDiskUsage()
+	uptime := LoadUptime()
 
 	// Set CPU
 	result.CPU = CpuDomain{
@@ -101,6 +103,9 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	for _, d := range diskusage {
 		result.DiskUsage = append(result.DiskUsage, DiskUsageDomain{Path: d.Path, UsedGB: float64(d.UsedSize) / 1024 / 1024 / 1024, TotalGB: float64(d.TotalSize) / 1024 / 1024 / 1024})
 	}
+
+	// Set uptime
+	result.Uptime = uptime
 
 	w.Header().Set("content-type", "application/json")
 	e := json.NewEncoder(w)

@@ -15,7 +15,7 @@
 		</div>
 		<div id="boxes">
 			<div class="half-box">
-				<span class="box-title">CPU</span>
+				<span class="box-title">cpu</span>
 				<div class="cpu-cores">
 					<bar ajsf-repeat="sysinfo.cpu.cores" ajsf-model="item"></bar>
 				</div>
@@ -30,7 +30,7 @@
 					<bar ajsf-repeat="sysinfo.memory" ajsf-model="item"></bar>
 				</div>
 			</div>
-			<div class="half-box">
+			<div class="half-box system">
 				<span class="box-title">system</span>
 				<div>
 					Load Average:
@@ -39,7 +39,8 @@
 					<span ajsf-text="sysinfo.loadavg15"></span>
 				</div>
 				<div>
-					Uptime: TODO: implement
+					Uptime:
+					<span ajsf-text="sysinfo.uptime"></span>
 				</div>
 			</div>
 			<div class="box">
