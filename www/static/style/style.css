@@ -58,8 +58,20 @@ body {
 
 #boxes .box, #boxes .half-box {
 	border: thin solid #FFFFFF10;
-	padding: 0.25rem;
 	min-width: 32.5rem;
+	padding: 0.25rem;
+	position: relative;
+}
+
+#boxes .box-title {
+	background-color: var(--background);
+	color: #FFFFFF40;
+	font-size: 0.5rem;
+	left: 0.25rem;
+	padding: 0 0.25rem;
+	position: absolute;
+	top: -0.25rem;
+	user-select: none;
 }
 
 .circle {

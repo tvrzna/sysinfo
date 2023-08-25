@@ -15,19 +15,23 @@
 		</div>
 		<div id="boxes">
 			<div class="half-box">
+				<span class="box-title">CPU</span>
 				<div class="cpu-cores">
 					<bar ajsf-repeat="sysinfo.cpu.cores" ajsf-model="item"></bar>
 				</div>
 			</div>
 			<div class="half-box diskusage">
+				<span class="box-title">diskusage</span>
 				<circle ajsf-repeat="sysinfo.diskusage" ajsf-model="item" size="8.5"></circle>
 			</div>
 			<div class="half-box">
+				<span class="box-title">memory</span>
 				<div class="memory">
 					<bar ajsf-repeat="sysinfo.memory" ajsf-model="item"></bar>
 				</div>
 			</div>
 			<div class="half-box">
+				<span class="box-title">system</span>
 				<div>
 					Load Average:
 					<span ajsf-text="sysinfo.loadavg1"></span>
@@ -39,6 +43,7 @@
 				</div>
 			</div>
 			<div class="box">
+				<span class="box-title">temps</span>
 				<div class="temps">
 					<div ajsf-repeat="sysinfo.tempDevices">
 						<span ajsf-text="item.name"></span>
