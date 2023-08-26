@@ -51,6 +51,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					},
 				];
 
+				context.sysinfo.cpu.cores = [];
 				for (var i = 0; i < context.data.cpu.cores.length; i++) {
 					context.sysinfo.cpu.cores[i] = {
 						legend: context.data.cpu.cores[i].id,
@@ -109,11 +110,22 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 		context.refresh();
 
 		var coresHeight = 0;
+		var coresCount = 0;
 		$(rootElement).find(".cpu-cores > bar").each(function(i, el){
 			coresHeight += el.offsetHeight;
+			coresCount++;
 		});
 
-		$(rootElement).find('.cpu-cores').attr("style", "max-height: " + coresHeight/2 + "px;");
+		var multiplier = 4;
+		if (coresCount >= 16 && coresCount < 32) {
+			multiplier = 8;
+		} else if (coresCount >= 32 && coresCount < 64) {
+			multiplier = 16;
+		} else if (coresCount >= 64) {
+			multiplier = 32;
+		}
+
+		$(rootElement).find('.cpu-cores').attr("style", "max-height: " + coresHeight/Math.floor(coresCount/multiplier) + "px;");
 	};
 
 	context.loadData();

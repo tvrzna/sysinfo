@@ -72,7 +72,7 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	result.CPU = CpuDomain{
 		Cores: make([]CpuCoreDomain, len(pCpu.Cores)),
 	}
-	for i := 0; i < len(result.CPU.Cores); i++ {
+	for i := 0; i < len(cCpu.Cores); i++ {
 		result.CPU.Cores[i] = CpuCoreDomain{
 			Id:    cpufreq[i].Processor,
 			Usage: cCpu.Cores[i].Usage(pCpu.Cores[i]),
