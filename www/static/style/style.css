@@ -188,6 +188,7 @@ bar {
 .diskusage {
 	align-items: center;
 	display: flex;
+	gap: .5rem;
 	justify-content: center;
 }
 
