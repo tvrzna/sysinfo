@@ -173,6 +173,7 @@ bar {
 .temps > div {
 	display: flex;
 	flex-direction: column;
+	flex-wrap: wrap;
 	margin-right: 0.5rem;
 }
 
@@ -184,6 +185,7 @@ bar {
 .temps > div > .temp-sensors {
 	display: flex;
 	column-gap: 0.25rem;
+	flex-wrap: wrap;
 }
 
 .diskusage {
