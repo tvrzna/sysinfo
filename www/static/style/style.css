@@ -165,6 +165,7 @@ bar {
 
 .temps {
 	display: flex;
+	flex-wrap: wrap;
 	gap: .5rem;
 	justify-content: center;
 }
@@ -188,6 +189,7 @@ bar {
 .diskusage {
 	align-items: center;
 	display: flex;
+	flex-wrap: wrap;
 	gap: .5rem;
 	justify-content: center;
 }
@@ -207,4 +209,15 @@ bar {
 
 #footer a {
 	color: #FFFFFF40;
+}
+
+@media (max-width: 1040px) {
+	html {
+		margin: 0.125rem;
+	}
+
+	#boxes .box, #boxes .half-box {
+		min-width: 100%;
+		padding: 0.25rem 0;
+	}
 }
