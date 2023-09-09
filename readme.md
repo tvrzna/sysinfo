@@ -1,5 +1,5 @@
 # sysinfo
-Simple sysinfo website
+Simple sysinfo website for Linux
 
 ```
 Usage: sysinfo [options]
