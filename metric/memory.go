@@ -24,30 +24,6 @@ type MemoryInfo struct {
 	SwapFree     uint64
 }
 
-func (m *MemoryInfo) toGB(value uint64) float32 {
-	return float32(value) / 1024 / 1024
-}
-
-func (m *MemoryInfo) MemTotalGB() float32 {
-	return m.toGB(m.MemTotal)
-}
-
-func (m *MemoryInfo) MemFreeGB() float32 {
-	return m.toGB(m.MemFree)
-}
-
-func (m *MemoryInfo) MemAvailableGB() float32 {
-	return m.toGB(m.MemAvailable)
-}
-
-func (m *MemoryInfo) SwapTotalGB() float32 {
-	return m.toGB(m.SwapTotal)
-}
-
-func (m *MemoryInfo) SwapFreeGB() float32 {
-	return m.toGB(m.SwapFree)
-}
-
 func LoadMemInfo() *MemoryInfo {
 	f, err := os.Open(pathMeminfo)
 	if err != nil {

@@ -8,6 +8,30 @@ import (
 	"github.com/tvrzna/sysinfo/metric"
 )
 
+type MemoryUnit byte
+
+const (
+	UnitK MemoryUnit = iota
+	UnitM
+	UnitG
+	UnitT
+)
+
+func (b MemoryUnit) String() string {
+	return []string{"K", "M", "G", "T"}[int(b)]
+}
+
+func (b MemoryUnit) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + b.String() + "\""), nil
+}
+
+func (b *MemoryUnit) UnmarshalJSON(data []byte) error {
+	var v string
+	json.Unmarshal(data, &v)
+	*b = map[string]MemoryUnit{"K": UnitK, "M": UnitM, "G": UnitG, "T": UnitT}[v]
+	return nil
+}
+
 type SysinfoDomain struct {
 	CPU       CpuDomain          `json:"cpu"`
 	RAM       MemoryDomain       `json:"ram"`
@@ -29,8 +53,20 @@ type CpuCoreDomain struct {
 }
 
 type MemoryDomain struct {
-	Used  float32 `json:"used"`
-	Total float32 `json:"total"`
+	Used  float64    `json:"used"`
+	Total float64    `json:"total"`
+	Unit  MemoryUnit `json:"unit"`
+}
+
+func (m *MemoryDomain) tidyValues() {
+	for i := 1; i < 4; i++ {
+		val := m.Total / 1024
+		if val > 1 {
+			m.Total /= 1024
+			m.Used /= 1024
+			m.Unit = MemoryUnit(byte(i))
+		}
+	}
 }
 
 type LoadavgDomain struct {
@@ -81,8 +117,11 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set RAM & Swap
-	result.RAM = MemoryDomain{Used: mem.MemTotalGB() - mem.MemAvailableGB(), Total: mem.MemTotalGB()}
-	result.SWAP = MemoryDomain{Used: mem.SwapTotalGB() - mem.SwapFreeGB(), Total: mem.SwapTotalGB()}
+	result.RAM = MemoryDomain{Used: float64(mem.MemTotal - mem.MemAvailable), Total: float64(mem.MemTotal)}
+	result.SWAP = MemoryDomain{Used: float64(mem.SwapTotal - mem.SwapFree), Total: float64(mem.SwapTotal)}
+
+	result.RAM.tidyValues()
+	result.SWAP.tidyValues()
 
 	// Set Loadavgs
 	result.Loadavg = LoadavgDomain{Loadavg1: loadavg.Loadavg1, Loadavg5: loadavg.Loadavg5, Loadavg15: loadavg.Loadavg15}
