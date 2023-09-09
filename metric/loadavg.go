@@ -1,7 +1,14 @@
 package metric
 
-// #include <stdlib.h>
-import "C"
+import (
+	"os"
+	"strconv"
+	"strings"
+)
+
+const (
+	pathLoadavg = "/proc/loadavg"
+)
 
 type Loadavg struct {
 	Loadavg1  float32
@@ -10,10 +17,19 @@ type Loadavg struct {
 }
 
 func GetLoadavg() *Loadavg {
-	var arr [3]C.double
-	result := C.getloadavg(&arr[0], 3)
-	if result != 3 {
-		return nil
+	b, _ := os.ReadFile(pathLoadavg)
+	data := strings.Split(string(b), " ")
+	return &Loadavg{
+		Loadavg1:  stringToFloat32(data[0]),
+		Loadavg5:  stringToFloat32(data[1]),
+		Loadavg15: stringToFloat32(data[2]),
 	}
-	return &Loadavg{Loadavg1: float32(arr[0]), Loadavg5: float32(arr[1]), Loadavg15: float32(arr[2])}
+}
+
+func stringToFloat32(val string) float32 {
+	value, err := strconv.ParseFloat(val, 32)
+	if err == nil {
+		return float32(value)
+	}
+	return 0
 }
