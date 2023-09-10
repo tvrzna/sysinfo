@@ -40,12 +40,12 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 				context.data = JSON.parse(data);
 				context.sysinfo.memory = [
 					{
-						label: context.data.ram.used.toFixed(1) + '/' + context.data.ram.total.toFixed(1) + ' ' + context.data.ram.unit,
+						label: context.data.ram.used.toFixed(1) + context.data.ram.usedUnit + '/' + context.data.ram.total.toFixed(1) + context.data.ram.totalUnit,
 						percent: context.data.ram.used / context.data.ram.total * 100,
 						legend: 'RAM'
 					},
 					{
-						label: context.data.swap.used.toFixed(1) + '/' + context.data.swap.total.toFixed(1) + ' ' + context.data.swap.unit,
+						label: context.data.swap.used.toFixed(1) + context.data.swap.usedUnit + '/' + context.data.swap.total.toFixed(1) + context.data.swap.totalUnit,
 						percent: context.data.swap.used / context.data.swap.total * 100,
 						legend: 'SWAP'
 					},
@@ -82,9 +82,9 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 				context.sysinfo.diskusage = [];
 				for (var i = 0; i < context.data.diskusage.length; i++) {
 					context.sysinfo.diskusage[i] = {
-						label: context.data.diskusage[i].usedgb.toFixed(0) + '/' + context.data.diskusage[i].totalgb.toFixed(0) + ' G',
+						label: context.data.diskusage[i].used.toFixed(0) + context.data.diskusage[i].usedUnit + '/' + context.data.diskusage[i].total.toFixed(0) + context.data.diskusage[i].totalUnit,
 						legend: context.data.diskusage[i].path,
-						percent: context.data.diskusage[i].usedgb/context.data.diskusage[i].totalgb*100
+						percent: context.data.diskusage[i].percent
 					}
 				}
 

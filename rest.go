@@ -11,14 +11,15 @@ import (
 type MemoryUnit byte
 
 const (
-	UnitK MemoryUnit = iota
+	UnitB MemoryUnit = iota
+	UnitK
 	UnitM
 	UnitG
 	UnitT
 )
 
 func (b MemoryUnit) String() string {
-	return []string{"K", "M", "G", "T"}[int(b)]
+	return []string{"B", "K", "M", "G", "T"}[int(b)]
 }
 
 func (b MemoryUnit) MarshalJSON() ([]byte, error) {
@@ -28,7 +29,7 @@ func (b MemoryUnit) MarshalJSON() ([]byte, error) {
 func (b *MemoryUnit) UnmarshalJSON(data []byte) error {
 	var v string
 	json.Unmarshal(data, &v)
-	*b = map[string]MemoryUnit{"K": UnitK, "M": UnitM, "G": UnitG, "T": UnitT}[v]
+	*b = map[string]MemoryUnit{"B": UnitB, "K": UnitK, "M": UnitM, "G": UnitG, "T": UnitT}[v]
 	return nil
 }
 
@@ -53,20 +54,15 @@ type CpuCoreDomain struct {
 }
 
 type MemoryDomain struct {
-	Used  float64    `json:"used"`
-	Total float64    `json:"total"`
-	Unit  MemoryUnit `json:"unit"`
+	Used      float64    `json:"used"`
+	UsedUnit  MemoryUnit `json:"usedUnit"`
+	Total     float64    `json:"total"`
+	TotalUnit MemoryUnit `json:"totalUnit"`
 }
 
 func (m *MemoryDomain) tidyValues() {
-	for i := 1; i < 4; i++ {
-		val := m.Total / 1024
-		if val > 1 {
-			m.Total /= 1024
-			m.Used /= 1024
-			m.Unit = MemoryUnit(byte(i))
-		}
-	}
+	m.Total, m.TotalUnit = tidyPrefix(m.Total, 1)
+	m.Used, m.UsedUnit = tidyPrefix(m.Used, 1)
 }
 
 type LoadavgDomain struct {
@@ -86,9 +82,34 @@ type TempSensorDomain struct {
 }
 
 type DiskUsageDomain struct {
-	Path    string  `json:"path"`
-	UsedGB  float64 `json:"usedgb"`
-	TotalGB float64 `json:"totalgb"`
+	Path      string     `json:"path"`
+	Used      float64    `json:"used"`
+	UsedUnit  MemoryUnit `json:"usedUnit"`
+	Total     float64    `json:"total"`
+	TotalUnit MemoryUnit `json:"totalUnit"`
+	Percent   float64    `json:"percent"`
+}
+
+func (d *DiskUsageDomain) tidyValues() {
+	if d.Used > 0 && d.Total > 0 {
+		d.Percent = d.Used / d.Total * 100
+	}
+	d.Used, d.UsedUnit = tidyPrefix(d.Used, 0)
+	d.Total, d.TotalUnit = tidyPrefix(d.Total, 0)
+}
+
+func tidyPrefix(value float64, start byte) (float64, MemoryUnit) {
+	result := value
+	resultUnit := MemoryUnit(start)
+	for i := start; i < 5; i++ {
+		if val := result / 1024; val < 1 {
+			break
+		} else {
+			result = val
+			resultUnit = MemoryUnit(i + 1)
+		}
+	}
+	return result, resultUnit
 }
 
 func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +160,9 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	// Set diskusage
 	result.DiskUsage = make([]DiskUsageDomain, 0)
 	for _, d := range diskusage {
-		result.DiskUsage = append(result.DiskUsage, DiskUsageDomain{Path: d.Path, UsedGB: float64(d.UsedSize) / 1024 / 1024 / 1024, TotalGB: float64(d.TotalSize) / 1024 / 1024 / 1024})
+		diskUsage := DiskUsageDomain{Path: d.Path, Used: float64(d.UsedSize), Total: float64(d.TotalSize)}
+		diskUsage.tidyValues()
+		result.DiskUsage = append(result.DiskUsage, diskUsage)
 	}
 
 	// Set uptime
