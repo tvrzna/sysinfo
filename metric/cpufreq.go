@@ -3,15 +3,17 @@ package metric
 import (
 	"bufio"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 )
 
 const (
-	pathCpuinfo = "/proc/cpuinfo"
-	processor   = "processor"
-	cpuMHz      = "cpu MHz"
-	coreId      = "core id"
+	pathCpuinfo  = "/proc/cpuinfo"
+	pathCpuSpeed = "/sys/devices/system/cpu/cpu0/cpufreq"
+	processor    = "processor"
+	cpuMHz       = "cpu MHz"
+	coreId       = "core id"
 )
 
 type Cpufreq struct {
@@ -58,5 +60,37 @@ func LoadCpufreq() []*Cpufreq {
 	if p != nil {
 		result = append(result, p)
 	}
+
+	if len(result) > 0 && result[0].Freq == 0 {
+		freq := getFallbackCpuFreq()
+		if freq > 0 {
+			for _, c := range result {
+				c.Freq = freq
+			}
+		}
+	}
+
 	return result
+}
+
+func getFallbackCpuFreq() float64 {
+	for _, f := range []string{"bios_limit", "scaling_max_freq", "cpu_max_freq"} {
+		freq, err := loadCpuFreq(f)
+		if err == nil && freq > 0 {
+			return freq / 1000
+		}
+	}
+	return 0
+}
+
+func loadCpuFreq(fileName string) (float64, error) {
+	b, err := os.ReadFile(path.Join(pathCpuSpeed, fileName))
+	if err != nil {
+		return 0, err
+	}
+	value, err := strconv.ParseFloat(strings.TrimSpace(string(b)), 64)
+	if err != nil {
+		return 0, err
+	}
+	return value, nil
 }
