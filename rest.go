@@ -58,9 +58,13 @@ type MemoryDomain struct {
 	UsedUnit  MemoryUnit `json:"usedUnit"`
 	Total     float64    `json:"total"`
 	TotalUnit MemoryUnit `json:"totalUnit"`
+	Percent   float64    `json:"percent"`
 }
 
 func (m *MemoryDomain) tidyValues() {
+	if m.Used > 0 && m.Total > 0 {
+		m.Percent = m.Used / m.Total * 100
+	}
 	m.Total, m.TotalUnit = tidyPrefix(m.Total, 1)
 	m.Used, m.UsedUnit = tidyPrefix(m.Used, 1)
 }
