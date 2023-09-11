@@ -31,7 +31,13 @@ func (c *Cpu) Usage(previous *Cpu) float32 {
 	if previous != nil {
 		total := c.user + c.nice + c.system + c.idle
 		totalPrevious := previous.user + previous.nice + previous.system + previous.idle
-		return float32(100 * (total - totalPrevious + previous.idle - c.idle) / (total - totalPrevious))
+
+		val := (total - totalPrevious + previous.idle - c.idle)
+		valDiv := (total - totalPrevious)
+
+		if val > 0 && valDiv > 0 {
+			return float32(100 * (total - totalPrevious + previous.idle - c.idle) / (total - totalPrevious))
+		}
 	}
 	return 0
 }
