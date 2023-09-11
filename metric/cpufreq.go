@@ -74,7 +74,7 @@ func LoadCpufreq() []*Cpufreq {
 }
 
 func getFallbackCpuFreq() float64 {
-	for _, f := range []string{"bios_limit", "scaling_max_freq", "cpu_max_freq"} {
+	for _, f := range []string{"cpu_cur_freq", "scaling_cur_freq", "bios_limit"} {
 		freq, err := loadCpuFreq(f)
 		if err == nil && freq > 0 {
 			return freq / 1000
