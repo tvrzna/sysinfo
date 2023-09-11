@@ -219,7 +219,6 @@ bar {
 	}
 
 	#boxes .box, #boxes .half-box {
-		min-width: 100%;
-		padding: 0.25rem 0;
+		min-width: calc(100% - 0.25rem);
 	}
 }
