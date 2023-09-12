@@ -226,4 +226,8 @@ bar {
 	.system > div {
 		padding: 0.125rem;
 	}
+
+	#footer {
+		padding: 0.5rem 0.125rem;
+	}
 }

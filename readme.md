@@ -12,3 +12,15 @@ Options:
 ```
 
 ![](screenshot.png)
+
+## Roadmap
+- [X] CPU usage and frequency widget
+- [X] RAM and SWAP widget
+- [X] System temperature widget
+- [X] Diskusage widget
+- [X] Load Average and Uptime widget
+- [ ] Custom interval with possible pause option
+- [ ] Custom widget layout with possible configuration of widgets
+- [ ] Disk IOPS?
+- [ ] Network usage
+- [ ] Process watcher
