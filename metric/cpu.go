@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -25,9 +26,20 @@ type Cpu struct {
 	guest      int64
 	guest_nice int64
 	Cores      []*Cpu
+	Usage      float32
 }
 
-func (c *Cpu) Usage(previous *Cpu) float32 {
+func LoadCpu(doneCh chan bool, bundle *Bundle) {
+	previous := loadCpu()
+	time.Sleep(200 * time.Millisecond)
+	bundle.Cpu = loadCpu()
+	for i := 0; i < len(bundle.Cpu.Cores); i++ {
+		bundle.Cpu.Cores[i].calcUsage(previous.Cores[i])
+	}
+	doneCh <- true
+}
+
+func (c *Cpu) calcUsage(previous *Cpu) {
 	if previous != nil {
 		total := c.user + c.nice + c.system + c.idle
 		totalPrevious := previous.user + previous.nice + previous.system + previous.idle
@@ -36,13 +48,13 @@ func (c *Cpu) Usage(previous *Cpu) float32 {
 		valDiv := (total - totalPrevious)
 
 		if val > 0 && valDiv > 0 {
-			return float32(100 * (total - totalPrevious + previous.idle - c.idle) / (total - totalPrevious))
+			c.Usage = float32(100 * (total - totalPrevious + previous.idle - c.idle) / (total - totalPrevious))
+			return
 		}
 	}
-	return 0
 }
 
-func LoadCpu() *Cpu {
+func loadCpu() *Cpu {
 	f, err := os.Open(pathStat)
 	if err != nil {
 		return nil

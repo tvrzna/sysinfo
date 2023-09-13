@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/tvrzna/sysinfo/metric"
 )
@@ -119,41 +118,47 @@ func tidyPrefix(value float64, start byte) (float64, MemoryUnit) {
 func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	result := SysinfoDomain{}
 
-	pCpu := metric.LoadCpu()
-	time.Sleep(200 * time.Millisecond)
-	cCpu := metric.LoadCpu()
-	cpufreq := metric.LoadCpufreq()
-	loadavg := metric.GetLoadavg()
-	mem := metric.LoadMemInfo()
-	temps := metric.LoadTemps()
-	diskusage := metric.LoadDiskUsage()
-	uptime := metric.LoadUptime()
+	bundle := &metric.Bundle{}
+	doneCh := make(chan bool, 1)
+
+	go metric.LoadCpu(doneCh, bundle)
+
+	for i := 0; i < cap(doneCh); i++ {
+		<-doneCh
+	}
+
+	bundle.Cpufreq = metric.LoadCpufreq()
+	bundle.Loadavg = metric.GetLoadavg()
+	bundle.Mem = metric.LoadMemInfo()
+	bundle.Temps = metric.LoadTemps()
+	bundle.Diskusage = metric.LoadDiskUsage()
+	bundle.Uptime = metric.LoadUptime()
 
 	// Set CPU
 	result.CPU = CpuDomain{
-		Cores: make([]CpuCoreDomain, len(pCpu.Cores)),
+		Cores: make([]CpuCoreDomain, len(bundle.Cpu.Cores)),
 	}
-	for i := 0; i < len(cCpu.Cores); i++ {
+	for i := 0; i < len(bundle.Cpu.Cores); i++ {
 		result.CPU.Cores[i] = CpuCoreDomain{
-			Id:    cpufreq[i].Processor,
-			Usage: cCpu.Cores[i].Usage(pCpu.Cores[i]),
-			MHz:   cpufreq[i].Freq,
+			Id:    bundle.Cpufreq[i].Processor,
+			Usage: bundle.Cpu.Cores[i].Usage,
+			MHz:   bundle.Cpufreq[i].Freq,
 		}
 	}
 
 	// Set RAM & Swap
-	result.RAM = MemoryDomain{Used: float64(mem.MemTotal - mem.MemAvailable), Total: float64(mem.MemTotal)}
-	result.SWAP = MemoryDomain{Used: float64(mem.SwapTotal - mem.SwapFree), Total: float64(mem.SwapTotal)}
+	result.RAM = MemoryDomain{Used: float64(bundle.Mem.MemTotal - bundle.Mem.MemAvailable), Total: float64(bundle.Mem.MemTotal)}
+	result.SWAP = MemoryDomain{Used: float64(bundle.Mem.SwapTotal - bundle.Mem.SwapFree), Total: float64(bundle.Mem.SwapTotal)}
 
 	result.RAM.tidyValues()
 	result.SWAP.tidyValues()
 
 	// Set Loadavgs
-	result.Loadavg = LoadavgDomain{Loadavg1: loadavg.Loadavg1, Loadavg5: loadavg.Loadavg5, Loadavg15: loadavg.Loadavg15}
+	result.Loadavg = LoadavgDomain{Loadavg1: bundle.Loadavg.Loadavg1, Loadavg5: bundle.Loadavg.Loadavg5, Loadavg15: bundle.Loadavg.Loadavg15}
 
 	// Set temps
 	result.Temps = make([]TempDeviceDomain, 0)
-	for _, t := range temps {
+	for _, t := range bundle.Temps {
 		device := TempDeviceDomain{Name: t.Name, Sensors: make([]TempSensorDomain, 0)}
 		for _, s := range t.Temps {
 			device.Sensors = append(device.Sensors, TempSensorDomain{Name: s.Label, Temp: float32(s.Input) / 1000})
@@ -163,14 +168,14 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 
 	// Set diskusage
 	result.DiskUsage = make([]DiskUsageDomain, 0)
-	for _, d := range diskusage {
+	for _, d := range bundle.Diskusage {
 		diskUsage := DiskUsageDomain{Path: d.Path, Used: float64(d.UsedSize), Total: float64(d.TotalSize)}
 		diskUsage.tidyValues()
 		result.DiskUsage = append(result.DiskUsage, diskUsage)
 	}
 
 	// Set uptime
-	result.Uptime = uptime
+	result.Uptime = bundle.Uptime
 
 	w.Header().Set("content-type", "application/json")
 	e := json.NewEncoder(w)
