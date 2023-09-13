@@ -22,5 +22,5 @@ Options:
 - [ ] Custom interval with possible pause option
 - [ ] Custom widget layout with possible configuration of widgets
 - [ ] Disk IOPS?
-- [ ] Network usage
+- [X] Network usage
 - [ ] Process watcher

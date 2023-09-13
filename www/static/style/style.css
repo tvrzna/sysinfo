@@ -49,7 +49,7 @@ body {
 }
 
 #boxes .box {
-	flex: 2;
+	flex-basis: 100%;
 }
 
 #boxes .half-box {
@@ -163,26 +163,26 @@ bar {
 	flex: 50%;
 }
 
-.temps {
+.temps, .netspeeds {
 	display: flex;
 	flex-wrap: wrap;
 	gap: .5rem;
 	justify-content: center;
 }
 
-.temps > div {
+.temps > div, .netspeeds > div {
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
 	margin-right: 0.5rem;
 }
 
-.temps > div > span {
+.temps > div > span, .netspeeds > div > span {
 	font-weight: bold;
 	padding-bottom: 0.5rem;
 }
 
-.temps > div > .temp-sensors {
+.temps > div > .temp-sensors, .netspeeds > div > .netspeed {
 	display: flex;
 	column-gap: 0.25rem;
 	flex-wrap: wrap;

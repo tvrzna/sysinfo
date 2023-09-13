@@ -94,6 +94,24 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 				var seconds = context.data.uptime - ((days * 24 + hours) * 60 + minutes) * 60;
 				context.sysinfo.uptime = (days > 0 ? days + ' days, ' : '') + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
 
+				context.sysinfo.netspeed = [];
+				for (var i = 0; i < context.data.netspeed.length; i++) {
+					context.sysinfo.netspeed[i] = {
+						name: context.data.netspeed[i].name,
+						data: [{
+								label: context.data.netspeed[i].download.toFixed(1) + context.data.netspeed[i].downloadUnit,
+								legend: 'D',
+								percent: context.data.netspeed[i].downloadPercent
+							},
+							{
+								label: context.data.netspeed[i].upload.toFixed(1) + context.data.netspeed[i].uploadUnit,
+								legend: 'U',
+								percent: context.data.netspeed[i].uploadPercent
+							}
+						]
+					}
+				}
+
 				context.makeRefresh();
 			},
 			error: () => {
@@ -134,6 +152,10 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 
 app.directive('circle',`<div class="circle" ajsf-title="model.legend | suffix ' '| suffix model.label"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {
 	context.onRefresh = () => {
+		if (context.model == undefined) {
+			return;
+		}
+
 		if (context.model.fgColor == undefined) {
 			context.model.fgColor = context.model.percent <= 40 ? "#008800" : (context.model.percent <= 80 ? "#888800" : "#880000");
 		}
@@ -152,6 +174,10 @@ app.directive('circle',`<div class="circle" ajsf-title="model.legend | suffix ' 
 
 app.directive('bar', `<div class="bar" ajsf-title="model.legend | suffix ' '| suffix model.label"><span class="bar-legend" ajsf-text="model.legend"></span><div class="bar-inner"></div><span class="bar-label" ajsf-text="model.label"></span></div>`, (context, el) => {
 	context.onRefresh = () => {
+		if (context.model == undefined) {
+			return;
+		}
+
 		if (context.model.fgColor == undefined) {
 			context.model.fgColor = context.model.percent <= 40 ? "#008800" : (context.model.percent <= 80 ? "#888800" : "#880000");
 		}

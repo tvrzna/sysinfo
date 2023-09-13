@@ -43,13 +43,25 @@
 					<span ajsf-text="sysinfo.uptime"></span>
 				</div>
 			</div>
-			<div class="box">
+			<div class="half-box">
 				<span class="box-title">temps</span>
 				<div class="temps">
 					<div ajsf-repeat="sysinfo.tempDevices">
 						<span ajsf-text="item.name"></span>
 						<div class="temp-sensors">
 							<circle ajsf-repeat="item.temps" ajsf-model="item" size="3"></circle>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="half-box">
+				<span class="box-title">netspeed</span>
+				<div class="netspeeds">
+					<div ajsf-repeat="sysinfo.netspeed">
+						<span ajsf-text="item.name"></span>
+						<div class="netspeed">
+							<circle ajsf-repeat="item.data" ajsf-model="item" size="3"></circle>
+							<circle ajsf-model="item.upload" size="3"></circle>
 						</div>
 					</div>
 				</div>

@@ -40,6 +40,7 @@ type SysinfoDomain struct {
 	Temps     []TempDeviceDomain `json:"temps"`
 	DiskUsage []DiskUsageDomain  `json:"diskusage"`
 	Uptime    uint64             `json:"uptime"`
+	Netspeed  []NetspeedDomain   `json:"netspeed"`
 }
 
 type CpuDomain struct {
@@ -93,6 +94,24 @@ type DiskUsageDomain struct {
 	Percent   float64    `json:"percent"`
 }
 
+type NetspeedDomain struct {
+	Name            string     `json:"name"`
+	Download        float64    `json:"download"`
+	DownloadUnit    MemoryUnit `json:"downloadUnit"`
+	DownloadPercent float64    `json:"downloadPercent"`
+	Upload          float64    `json:"upload"`
+	UploadUnit      MemoryUnit `json:"uploadUnit"`
+	UploadPercent   float64    `json:"uploadPercent"`
+}
+
+func (n *NetspeedDomain) tidyValues() {
+	n.DownloadPercent = n.Download / 104857600 * 100
+	n.UploadPercent = n.Upload / 104857600 * 100
+
+	n.Download, n.DownloadUnit = tidyPrefix(n.Download, 0)
+	n.Upload, n.UploadUnit = tidyPrefix(n.Upload, 0)
+}
+
 func (d *DiskUsageDomain) tidyValues() {
 	if d.Used > 0 && d.Total > 0 {
 		d.Percent = d.Used / d.Total * 100
@@ -119,9 +138,10 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	result := SysinfoDomain{}
 
 	bundle := &metric.Bundle{}
-	doneCh := make(chan bool, 1)
+	doneCh := make(chan bool, 2)
 
 	go metric.LoadCpu(doneCh, bundle)
+	go metric.LoadNetspeed(doneCh, bundle)
 
 	for i := 0; i < cap(doneCh); i++ {
 		<-doneCh
@@ -176,6 +196,14 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 
 	// Set uptime
 	result.Uptime = bundle.Uptime
+
+	// Set netspeed
+	result.Netspeed = make([]NetspeedDomain, 0)
+	for _, n := range bundle.Netspeed {
+		netspeed := NetspeedDomain{Name: n.Name, Download: n.Download, Upload: n.Upload}
+		netspeed.tidyValues()
+		result.Netspeed = append(result.Netspeed, netspeed)
+	}
 
 	w.Header().Set("content-type", "application/json")
 	e := json.NewEncoder(w)

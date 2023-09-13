@@ -8,4 +8,5 @@ type Bundle struct {
 	Temps     []*TempDevice
 	Diskusage []*DiskUsage
 	Uptime    uint64
+	Netspeed  []*Netspeed
 }
