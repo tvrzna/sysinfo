@@ -45,6 +45,9 @@ func loadNetspeed() []*Netspeed {
 	var result []*Netspeed
 	ifaces, _ := os.ReadDir(pathNet)
 	for _, iface := range ifaces {
+		if iface.Name() == "lo" {
+			continue
+		}
 		strDownload, _ := os.ReadFile(filepath.Join(pathNet, iface.Name(), pathRxBytes))
 		strUpload, _ := os.ReadFile(filepath.Join(pathNet, iface.Name(), pathTxBytes))
 
