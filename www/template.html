@@ -66,6 +66,25 @@
 					</div>
 				</div>
 			</div>
+			<div class="box">
+				<span class="box-title">top</span>
+				<table>
+					<tr>
+						<th style="width: 3rem;">pid</th>
+						<th style="width: 3rem;">state</th>
+						<th style="width: 3rem;">cpu%</th>
+						<th style="width: 3rem;">ram</th>
+						<th>command</th>
+					</tr>
+					<tr ajsf-repeat="sysinfo.top">
+						<td ajsf-text="item.pid"></td>
+						<td ajsf-text="item.state"></td>
+						<td ajsf-text="item.cpu"></td>
+						<td ajsf-text="item.ram | suffix item.ramUnit"></td>
+						<td ajsf-text="item.comm"></td>
+					</tr>
+				</table>
+			</div>
 		</div>
 		<div id="footer">Powered by <a href="https://github.com/tvrzna/sysinfo" target="_blank">sysinfo</a> {{.Version}}</div>
 		<script type="text/javascript" src='{{.UrlFor "static/js/app.js" }}'></script>

@@ -9,4 +9,5 @@ type Bundle struct {
 	Diskusage []*DiskUsage
 	Uptime    uint64
 	Netspeed  []*Netspeed
+	Top       map[int]*TopProcess
 }

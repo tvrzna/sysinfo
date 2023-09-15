@@ -112,6 +112,18 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					}
 				}
 
+				context.sysinfo.top = [];
+				for (var i = 0; i < context.data.top.length; i++) {
+					context.sysinfo.top[i] = {
+						pid: context.data.top[i].pid,
+						state: context.data.top[i].state,
+						comm: context.data.top[i].comm,
+						cpu: context.data.top[i].cpu.toFixed(2),
+						ram: context.data.top[i].ram.toFixed(2),
+						ramUnit: context.data.top[i].ramUnit
+					};
+				}
+
 				context.makeRefresh();
 			},
 			error: () => {

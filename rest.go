@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 
 	"github.com/tvrzna/sysinfo/metric"
 )
@@ -41,6 +42,7 @@ type SysinfoDomain struct {
 	DiskUsage []DiskUsageDomain  `json:"diskusage"`
 	Uptime    uint64             `json:"uptime"`
 	Netspeed  []NetspeedDomain   `json:"netspeed"`
+	Top       []ProcDomain       `json:"top"`
 }
 
 type CpuDomain struct {
@@ -104,6 +106,15 @@ type NetspeedDomain struct {
 	UploadPercent   float64    `json:"uploadPercent"`
 }
 
+type ProcDomain struct {
+	PID      int        `json:"pid"`
+	Comm     string     `json:"comm"`
+	State    string     `json:"state"`
+	Cpu      float32    `json:"cpu"`
+	RamUsage float64    `json:"ram"`
+	RamUnit  MemoryUnit `json:"ramUnit"`
+}
+
 func (n *NetspeedDomain) tidyValues() {
 	n.DownloadPercent = n.Download / 104857600 * 100
 	n.UploadPercent = n.Upload / 104857600 * 100
@@ -118,6 +129,10 @@ func (d *DiskUsageDomain) tidyValues() {
 	}
 	d.Used, d.UsedUnit = tidyPrefix(d.Used, 0)
 	d.Total, d.TotalUnit = tidyPrefix(d.Total, 0)
+}
+
+func (p *ProcDomain) tidyValues() {
+	p.RamUsage, p.RamUnit = tidyPrefix(p.RamUsage, 0)
 }
 
 func tidyPrefix(value float64, start byte) (float64, MemoryUnit) {
@@ -138,10 +153,11 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 	result := SysinfoDomain{}
 
 	bundle := &metric.Bundle{}
-	doneCh := make(chan bool, 2)
+	doneCh := make(chan bool, 3)
 
 	go metric.LoadCpu(doneCh, bundle)
 	go metric.LoadNetspeed(doneCh, bundle)
+	go metric.LoadTop(doneCh, bundle)
 
 	for i := 0; i < cap(doneCh); i++ {
 		<-doneCh
@@ -204,6 +220,18 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 		netspeed.tidyValues()
 		result.Netspeed = append(result.Netspeed, netspeed)
 	}
+
+	// Set Proc
+	result.Top = make([]ProcDomain, 0)
+	for _, p := range bundle.Top {
+		pid := ProcDomain{PID: p.PID, Comm: p.Comm[1 : len(p.Comm)-1], State: string(p.State), Cpu: p.CpuUsage, RamUsage: float64(p.RamUsage)}
+		pid.tidyValues()
+		result.Top = append(result.Top, pid)
+	}
+	sort.Slice(result.Top, func(i, j int) bool {
+		return result.Top[i].Cpu > result.Top[j].Cpu
+	})
+	result.Top = result.Top[:20]
 
 	w.Header().Set("content-type", "application/json")
 	e := json.NewEncoder(w)
