@@ -41,8 +41,8 @@ func LoadCpu(doneCh chan bool, bundle *Bundle) {
 
 func (c *Cpu) calcUsage(previous *Cpu) {
 	if previous != nil {
-		total := c.user + c.nice + c.system + c.idle
-		totalPrevious := previous.user + previous.nice + previous.system + previous.idle
+		total := c.getTotal()
+		totalPrevious := previous.getTotal()
 
 		val := (total - totalPrevious + previous.idle - c.idle)
 		valDiv := (total - totalPrevious)
@@ -52,6 +52,10 @@ func (c *Cpu) calcUsage(previous *Cpu) {
 			return
 		}
 	}
+}
+
+func (c *Cpu) getTotal() int64 {
+	return c.user + c.nice + c.system + c.idle
 }
 
 func loadCpu() *Cpu {
