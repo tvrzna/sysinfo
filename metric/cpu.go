@@ -2,6 +2,7 @@ package metric
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -72,25 +73,16 @@ func loadCpu() *Cpu {
 		line := scanner.Text()
 		if strings.HasPrefix(line, cpu) {
 			cpu := &Cpu{}
-			data := strings.Split(strings.ReplaceAll(line, "  ", " "), " ")
-			if len(data[0]) == 3 {
+			var name string
+			fmt.Sscanf(line, "%s %d %d %d %d %d %d %d %d %d %d", &name, &cpu.user, &cpu.nice, &cpu.system, &cpu.idle, &cpu.iowait, &cpu.irq, &cpu.softirq, &cpu.steal, &cpu.guest, &cpu.guest_nice)
+			if len(name) == 3 {
 				result = cpu
 				result.Cores = make([]*Cpu, 0)
 			} else {
 				result.Cores = append(result.Cores, cpu)
-				id, _ := strconv.Atoi(data[0][3:])
+				id, _ := strconv.Atoi(name[3:])
 				cpu.id = &id
 			}
-			cpu.user, _ = strconv.ParseInt(data[1], 10, 64)
-			cpu.nice, _ = strconv.ParseInt(data[2], 10, 64)
-			cpu.system, _ = strconv.ParseInt(data[3], 10, 64)
-			cpu.idle, _ = strconv.ParseInt(data[4], 10, 64)
-			cpu.iowait, _ = strconv.ParseInt(data[5], 10, 64)
-			cpu.irq, _ = strconv.ParseInt(data[6], 10, 64)
-			cpu.softirq, _ = strconv.ParseInt(data[7], 10, 64)
-			cpu.steal, _ = strconv.ParseInt(data[8], 10, 64)
-			cpu.guest, _ = strconv.ParseInt(data[9], 10, 64)
-			cpu.guest_nice, _ = strconv.ParseInt(data[10], 10, 64)
 		}
 	}
 	return result
