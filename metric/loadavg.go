@@ -1,9 +1,8 @@
 package metric
 
 import (
+	"fmt"
 	"os"
-	"strconv"
-	"strings"
 )
 
 const (
@@ -17,19 +16,8 @@ type Loadavg struct {
 }
 
 func GetLoadavg() *Loadavg {
+	result := &Loadavg{}
 	b, _ := os.ReadFile(pathLoadavg)
-	data := strings.Split(string(b), " ")
-	return &Loadavg{
-		Loadavg1:  stringToFloat32(data[0]),
-		Loadavg5:  stringToFloat32(data[1]),
-		Loadavg15: stringToFloat32(data[2]),
-	}
-}
-
-func stringToFloat32(val string) float32 {
-	value, err := strconv.ParseFloat(val, 32)
-	if err == nil {
-		return float32(value)
-	}
-	return 0
+	fmt.Sscanf(string(b), "%f %f %f", &result.Loadavg1, &result.Loadavg5, &result.Loadavg15)
+	return result
 }
