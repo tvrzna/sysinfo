@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 	"sort"
 
@@ -229,6 +230,9 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 		result.Top = append(result.Top, pid)
 	}
 	sort.Slice(result.Top, func(i, j int) bool {
+		if result.Top[i].Cpu == result.Top[j].Cpu {
+			return (result.Top[i].RamUsage * (math.Pow(1024, float64(result.Top[i].RamUnit)))) > (result.Top[j].RamUsage * (math.Pow(1024, float64(result.Top[j].RamUnit))))
+		}
 		return result.Top[i].Cpu > result.Top[j].Cpu
 	})
 	result.Top = result.Top[:20]
