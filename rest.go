@@ -20,7 +20,7 @@ const (
 )
 
 func (b MemoryUnit) String() string {
-	return []string{"B", "K", "M", "G", "T"}[int(b)]
+	return []string{"B", "K", "M", "G", "T", "P"}[int(b)]
 }
 
 func (b MemoryUnit) MarshalJSON() ([]byte, error) {
