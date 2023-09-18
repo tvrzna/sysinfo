@@ -69,7 +69,7 @@ func loadTop() map[int]*TopProcess {
 			if err != nil {
 				continue
 			}
-			data := strings.Split(string(b), " ")
+			data := strings.SplitN(string(b), " ", 25)
 
 			p.PID, _ = strconv.Atoi(data[0])
 			p.Comm = data[1]

@@ -235,7 +235,9 @@ func HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
 		}
 		return result.Top[i].Cpu > result.Top[j].Cpu
 	})
-	result.Top = result.Top[:20]
+	if len(result.Top) > 20 {
+		result.Top = result.Top[:20]
+	}
 
 	w.Header().Set("content-type", "application/json")
 	e := json.NewEncoder(w)
