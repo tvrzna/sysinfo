@@ -14,23 +14,19 @@ const (
 )
 
 type TopProcess struct {
-	PID        int
-	Comm       string
-	State      byte
-	PPID       int
-	Utime      uint64
-	Stime      uint64
-	Cutime     int64
-	Cstime     int64
-	Priority   int64
-	NumThreads int64
-	StartTime  uint64
-	Vsize      uint64
-	RSS        int64
-	RSSlim     int64
-	Now        uint64
-	CpuUsage   float32
-	RamUsage   uint64
+	PID      int
+	Comm     string
+	State    byte
+	PPID     int
+	Utime    uint64
+	Stime    uint64
+	Cutime   int64
+	Cstime   int64
+	RSS      int64
+	RSSlim   int64
+	Now      uint64
+	CpuUsage float32
+	RamUsage uint64
 }
 
 func (t *TopProcess) calc(p *TopProcess) {
@@ -79,10 +75,6 @@ func loadTop() map[int]*TopProcess {
 			p.Stime, _ = strconv.ParseUint(data[14], 10, 64)
 			p.Cutime, _ = strconv.ParseInt(data[15], 10, 64)
 			p.Cstime, _ = strconv.ParseInt(data[16], 10, 64)
-			p.Priority, _ = strconv.ParseInt(data[17], 10, 64)
-			p.NumThreads, _ = strconv.ParseInt(data[19], 10, 64)
-			p.StartTime, _ = strconv.ParseUint(data[21], 10, 64)
-			p.Vsize, _ = strconv.ParseUint(data[22], 10, 64)
 			p.RSS, _ = strconv.ParseInt(data[23], 10, 64)
 			p.RSSlim, _ = strconv.ParseInt(data[24], 10, 64)
 			p.Now = uint64(time.Now().UnixMilli())
