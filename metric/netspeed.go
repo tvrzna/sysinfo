@@ -22,7 +22,7 @@ type Netspeed struct {
 
 func LoadNetspeed(doneCh chan bool, bundle *Bundle) {
 	previous := loadNetspeed()
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 	bundle.Netspeed = loadNetspeed()
 	for _, n := range bundle.Netspeed {
 		var o *Netspeed
@@ -35,8 +35,8 @@ func LoadNetspeed(doneCh chan bool, bundle *Bundle) {
 		if o == nil {
 			continue
 		}
-		n.Download = (n.Download - o.Download) * 5
-		n.Upload = (n.Upload - o.Upload) * 5
+		n.Download = (n.Download - o.Download) * 2
+		n.Upload = (n.Upload - o.Upload) * 2
 	}
 	doneCh <- true
 }

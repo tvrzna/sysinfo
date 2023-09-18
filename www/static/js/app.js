@@ -22,7 +22,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 				if (context.loading > 0) {
 					loadingOverlay[0].style.display = 'flex';
 				}
-			}, 250)
+			}, 550)
 		} else {
 			loadingOverlay[0].style.display = 'none';
 			context.loading = 0;
@@ -159,7 +159,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 	};
 
 	context.loadData();
-	setInterval(context.loadData, 1000);
+	setInterval(context.loadData, 500);
 });
 
 app.directive('circle',`<div class="circle" ajsf-title="model.legend | suffix ' '| suffix model.label"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {

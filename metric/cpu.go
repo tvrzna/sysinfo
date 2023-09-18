@@ -32,7 +32,7 @@ type Cpu struct {
 
 func LoadCpu(doneCh chan bool, bundle *Bundle) {
 	previous := loadCpu()
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 	bundle.Cpu = loadCpu()
 	for i := 0; i < len(bundle.Cpu.Cores); i++ {
 		bundle.Cpu.Cores[i].calcUsage(previous.Cores[i])

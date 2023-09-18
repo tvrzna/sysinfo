@@ -42,7 +42,7 @@ func (t *TopProcess) getTotal() uint64 {
 
 func LoadTop(doneCh chan bool, bundle *Bundle) {
 	previous := loadTop()
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(400 * time.Millisecond)
 	bundle.Top = loadTop()
 
 	for _, p := range bundle.Top {
@@ -65,7 +65,7 @@ func loadTop() map[int]*TopProcess {
 			if err != nil {
 				continue
 			}
-			data := strings.SplitN(string(b), " ", 25)
+			data := strings.SplitN(string(b), " ", 26)
 
 			p.PID, _ = strconv.Atoi(data[0])
 			p.Comm = data[1]
