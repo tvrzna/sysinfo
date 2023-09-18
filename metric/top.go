@@ -57,7 +57,7 @@ func LoadTop(doneCh chan bool, bundle *Bundle) {
 
 func loadTop() map[int]*TopProcess {
 	result := make(map[int]*TopProcess)
-	proc, _ := os.ReadDir(pathProc)
+	proc, _ := readDir(pathProc)
 	for _, pid := range proc {
 		if pid.IsDir() {
 			if _, err := strconv.Atoi(pid.Name()); err != nil {
@@ -90,4 +90,13 @@ func loadTop() map[int]*TopProcess {
 		}
 	}
 	return result
+}
+
+func readDir(path string) ([]os.DirEntry, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	return f.ReadDir(-1)
 }
