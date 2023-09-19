@@ -22,6 +22,21 @@ body {
 	font-size: 1.5rem;
 }
 
+#header select {
+	background-color: var(--background);
+	border: thin solid #FFFFFF10;
+	color: #eee;
+	font-family: monospace;
+	font-size: 0.625rem;
+	padding: 0.25rem;
+	text-align: right;
+}
+
+#header select:focus {
+	border-color: #FFFFFF30;
+	outline: none;
+}
+
 .loading-spinner {
 	content: ' ';
 	display: none;
@@ -31,6 +46,11 @@ body {
 	border: .125rem solid #fff;
 	border-color: #fff transparent #fff transparent;
 	animation: loading-spinner-rotation 0.6s linear infinite;
+}
+
+.stretch {
+	align-self: stretch;
+	flex: 1;
 }
 
 @keyframes loading-spinner-rotation {

@@ -7,6 +7,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 		tempDevices: [],
 		diskusage: []
 	};
+	context.intervalValue = 500;
 
 	var lock = false;
 	var loadingOverlay = $(rootElement).find('.loading-spinner');
@@ -158,8 +159,20 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 		$(rootElement).find('.cpu-cores').attr("style", "max-height: " + coresHeight/Math.floor(coresCount/multiplier) + "px;");
 	};
 
+	context.changeInterval = () => {
+		if ([500, 1000, 2000, 5000, 10000].includes(Number(context.intervalValue))) {
+			clearInterval(context.interval);
+			context.interval = setInterval(context.loadData, Number(context.intervalValue));
+			console.log('changed interval ' + context.intervalValue);
+		} else if (Number(context.intervalValue) == 0) {
+			clearInterval(context.interval);
+		} else {
+			console.log('he?')
+		}
+	};
+
 	context.loadData();
-	setInterval(context.loadData, 500);
+	context.interval = setInterval(context.loadData, 500);
 });
 
 app.directive('circle',`<div class="circle" ajsf-title="model.legend | suffix ' '| suffix model.label"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {

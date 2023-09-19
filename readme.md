@@ -19,8 +19,9 @@ Options:
 - [X] System temperature widget
 - [X] Diskusage widget
 - [X] Load Average and Uptime widget
-- [ ] Custom interval with possible pause option
+- [X] Custom interval with possible pause option
 - [ ] Custom widget layout with possible configuration of widgets
 - [ ] Disk IOPS?
 - [X] Network usage
 - [ ] Process watcher
+- [ ] Shared results, if there is more data receivers, it should be handled by only one sysinfo load.
