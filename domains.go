@@ -37,6 +37,7 @@ type SysinfoDomain struct {
 	Uptime    uint64              `json:"uptime"`
 	Netspeed  []*NetspeedDomain   `json:"netspeed"`
 	Top       []*ProcDomain       `json:"top"`
+	Diskstats []*DiskstatDomain   `json:"diskstats"`
 }
 
 type CpuDomain struct {
@@ -109,9 +110,21 @@ type ProcDomain struct {
 	RamUnit  MemoryUnit `json:"ramUnit"`
 }
 
+type DiskstatDomain struct {
+	Name         string     `json:"name"`
+	Riops        uint64     `json:"riops"`
+	Read         float64    `json:"read"`
+	ReadUnit     MemoryUnit `json:"readUnit"`
+	ReadPercent  float64    `json:"readPercent"`
+	Wiops        uint64     `json:"wiops"`
+	Write        float64    `json:"write"`
+	WriteUnit    MemoryUnit `json:"writeUnit"`
+	WritePercent float64    `json:"writePercent"`
+}
+
 func (n *NetspeedDomain) tidyValues() {
-	n.DownloadPercent = n.Download / 104857600 * 100
-	n.UploadPercent = n.Upload / 104857600 * 100
+	n.DownloadPercent = n.Download / 104857600 * 50
+	n.UploadPercent = n.Upload / 104857600 * 50
 
 	n.Download, n.DownloadUnit = tidyPrefix(n.Download, 0)
 	n.Upload, n.UploadUnit = tidyPrefix(n.Upload, 0)
@@ -127,6 +140,17 @@ func (d *DiskUsageDomain) tidyValues() {
 
 func (p *ProcDomain) tidyValues() {
 	p.RamUsage, p.RamUnit = tidyPrefix(p.RamUsage, 0)
+}
+
+func (d *DiskstatDomain) tidyValues() {
+	if d.Read > 0 {
+		d.ReadPercent = d.Read / 104857600 * 100
+	}
+	if d.Write > 0 {
+		d.WritePercent = d.Write / 104857600 * 100
+	}
+	d.Read, d.ReadUnit = tidyPrefix(d.Read, 0)
+	d.Write, d.WriteUnit = tidyPrefix(d.Write, 0)
 }
 
 func tidyPrefix(value float64, start byte) (float64, MemoryUnit) {

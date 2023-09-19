@@ -58,7 +58,7 @@
 					<div ajsf-repeat="sysinfo.tempDevices">
 						<span ajsf-text="item.name"></span>
 						<div class="temp-sensors">
-							<circle ajsf-repeat="item.temps" ajsf-model="item" size="3"></circle>
+							<circle ajsf-repeat="item.temps" ajsf-model="item" size="4"></circle>
 						</div>
 					</div>
 				</div>
@@ -69,8 +69,7 @@
 					<div ajsf-repeat="sysinfo.netspeed">
 						<span ajsf-text="item.name"></span>
 						<div class="netspeed">
-							<circle ajsf-repeat="item.data" ajsf-model="item" size="3"></circle>
-							<circle ajsf-model="item.upload" size="3"></circle>
+							<circle ajsf-repeat="item.data" ajsf-model="item" size="4"></circle>
 						</div>
 					</div>
 				</div>
@@ -93,6 +92,18 @@
 						<td ajsf-text="item.comm"></td>
 					</tr>
 				</table>
+			</div>
+			<div class="half-box">
+				<span class="box-title">diskstats</span>
+				<div class="diskstats">
+					<div ajsf-repeat="sysinfo.diskstats">
+						<span ajsf-text="item.name"></span>
+						<div>
+							<circle ajsf-repeat="item.speed" ajsf-model="item" size="5"></circle>
+							<circle ajsf-repeat="item.iops" ajsf-model="item" size="5"></circle>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id="footer">Powered by <a href="https://github.com/tvrzna/sysinfo" target="_blank">sysinfo</a> {{.Version}}</div>

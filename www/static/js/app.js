@@ -125,6 +125,37 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					};
 				}
 
+				context.sysinfo.diskstats = [];
+				for (var i = 0; i < context.data.diskstats.length; i++) {
+					context.sysinfo.diskstats[i] = {
+						name: context.data.diskstats[i].name,
+						iops: [
+							{
+								label: context.data.diskstats[i].riops,
+								legend: 'R iops',
+								percent: context.data.diskstats[i].riops * 20 / 100
+							},
+							{
+								label: context.data.diskstats[i].wiops,
+								legend: 'W iosp',
+								percent: context.data.diskstats[i].wiops * 20 / 100
+							}
+						],
+						speed: [
+							{
+								label: context.data.diskstats[i].read.toFixed(2) + context.data.diskstats[i].readUnit,
+								legend: 'R',
+								percent: context.data.diskstats[i].readPercent
+							},
+							{
+								label: context.data.diskstats[i].write.toFixed(2) + context.data.diskstats[i].writeUnit,
+								legend: 'W',
+								percent: context.data.diskstats[i].writePercent
+							}
+						]
+					}
+				}
+
 				context.makeRefresh();
 			},
 			error: () => {

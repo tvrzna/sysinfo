@@ -183,7 +183,7 @@ bar {
 	flex: 50%;
 }
 
-.temps, .netspeeds {
+.temps, .netspeeds, .diskstats {
 	display: flex;
 	flex-wrap: wrap;
 	gap: .5rem;
@@ -197,12 +197,12 @@ bar {
 	margin-right: 0.5rem;
 }
 
-.temps > div > span, .netspeeds > div > span {
+.temps > div > span, .netspeeds > div > span, .diskstats > div > span {
 	font-weight: bold;
 	padding-bottom: 0.5rem;
 }
 
-.temps > div > .temp-sensors, .netspeeds > div > .netspeed {
+.temps > div > .temp-sensors, .netspeeds > div > .netspeed, .diskstats > div > div{
 	display: flex;
 	column-gap: 0.25rem;
 	flex-wrap: wrap;

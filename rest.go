@@ -39,11 +39,12 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 	result := &SysinfoDomain{}
 
 	bundle := &metric.Bundle{}
-	doneCh := make(chan bool, 3)
+	doneCh := make(chan bool, 4)
 
 	go metric.LoadCpu(doneCh, bundle)
 	go metric.LoadNetspeed(doneCh, bundle)
 	go metric.LoadTop(doneCh, bundle)
+	go metric.LoadDiskstats(doneCh, bundle)
 
 	for i := 0; i < cap(doneCh); i++ {
 		<-doneCh
@@ -122,6 +123,14 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 	})
 	if len(result.Top) > 20 {
 		result.Top = result.Top[:20]
+	}
+
+	// Set diskstats
+	result.Diskstats = make([]*DiskstatDomain, 0)
+	for _, d := range bundle.Diskstats {
+		diskstat := &DiskstatDomain{Name: d.Name, Riops: d.Riops, Read: d.Read, Wiops: d.Wiops, Write: d.Write}
+		diskstat.tidyValues()
+		result.Diskstats = append(result.Diskstats, diskstat)
 	}
 
 	return result

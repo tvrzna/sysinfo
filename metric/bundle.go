@@ -10,4 +10,5 @@ type Bundle struct {
 	Uptime    uint64
 	Netspeed  []*Netspeed
 	Top       map[int]*TopProcess
+	Diskstats []*Diskstat
 }

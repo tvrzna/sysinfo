@@ -20,8 +20,8 @@ Options:
 - [X] Diskusage widget
 - [X] Load Average and Uptime widget
 - [X] Custom interval with possible pause option
+- [X] Network usage widget
+- [X] Process watcher widget
+- [X] Shared results, if there is more data receivers, it should be handled by only one sysinfo load.
+- [X] Diskstats widget
 - [ ] Custom widget layout with possible configuration of widgets
-- [ ] Disk IOPS?
-- [X] Network usage
-- [ ] Process watcher
-- [ ] Shared results, if there is more data receivers, it should be handled by only one sysinfo load.
