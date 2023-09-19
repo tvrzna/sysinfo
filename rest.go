@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"math"
 	"net/http"
 	"sort"
@@ -31,8 +30,6 @@ func (c *restContext) HandleSysinfoData(w http.ResponseWriter, r *http.Request) 
 	if c.lastLoad+450 < time.Now().UnixMilli() {
 		c.sysinfo = c.loadSysinfo()
 		c.lastLoad = time.Now().UnixMilli()
-	} else {
-		log.Print("use cached value")
 	}
 
 	e.Encode(c.sysinfo)
