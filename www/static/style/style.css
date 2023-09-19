@@ -208,6 +208,29 @@ bar {
 	flex-wrap: wrap;
 }
 
+.top table {
+	border-collapse: collapse;
+	overflow: hidden;
+	table-layout: fixed;
+	width: 100%;
+	word-wrap: break-word;
+}
+
+.top table tr th, .top table tr td {
+	padding: 0.0625rem 0.5rem;
+	text-align: right;
+	width: 3.5rem;
+}
+
+.top table tr th:last-child, .top table tr td:last-child {
+	text-align:left;
+	width: auto !important;
+}
+
+.top table tr:nth-child(even) {
+	background-color: #FFFFFF10;
+}
+
 .diskusage {
 	align-items: center;
 	display: flex;
