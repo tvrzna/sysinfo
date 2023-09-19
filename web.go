@@ -51,7 +51,7 @@ func (c *context) runWebServer() {
 
 	serverRoot, _ := fs.Sub(www, "www")
 	mux.Handle("/static/", http.FileServer(http.FS(serverRoot)))
-	mux.HandleFunc("/sysinfo.json", HandleSysinfoData)
+	mux.HandleFunc("/sysinfo.json", initRestContext().HandleSysinfoData)
 	mux.HandleFunc("/", c.handleIndex)
 
 	c.webServer = &http.Server{Handler: mux, Addr: c.conf.getServerUri()}

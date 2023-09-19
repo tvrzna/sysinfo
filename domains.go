@@ -1,0 +1,144 @@
+package main
+
+import "encoding/json"
+
+type MemoryUnit byte
+
+const (
+	UnitB MemoryUnit = iota
+	UnitK
+	UnitM
+	UnitG
+	UnitT
+)
+
+func (b MemoryUnit) String() string {
+	return []string{"B", "K", "M", "G", "T", "P"}[int(b)]
+}
+
+func (b MemoryUnit) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + b.String() + "\""), nil
+}
+
+func (b *MemoryUnit) UnmarshalJSON(data []byte) error {
+	var v string
+	json.Unmarshal(data, &v)
+	*b = map[string]MemoryUnit{"B": UnitB, "K": UnitK, "M": UnitM, "G": UnitG, "T": UnitT}[v]
+	return nil
+}
+
+type SysinfoDomain struct {
+	CPU       *CpuDomain          `json:"cpu"`
+	RAM       *MemoryDomain       `json:"ram"`
+	SWAP      *MemoryDomain       `json:"swap"`
+	Loadavg   *LoadavgDomain      `json:"loadavg"`
+	Temps     []*TempDeviceDomain `json:"temps"`
+	DiskUsage []*DiskUsageDomain  `json:"diskusage"`
+	Uptime    uint64              `json:"uptime"`
+	Netspeed  []*NetspeedDomain   `json:"netspeed"`
+	Top       []*ProcDomain       `json:"top"`
+}
+
+type CpuDomain struct {
+	Cores []*CpuCoreDomain `json:"cores"`
+}
+
+type CpuCoreDomain struct {
+	Id    int     `json:"id"`
+	Usage float32 `json:"usage"`
+	MHz   float64 `json:"mhz"`
+}
+
+type MemoryDomain struct {
+	Used      float64    `json:"used"`
+	UsedUnit  MemoryUnit `json:"usedUnit"`
+	Total     float64    `json:"total"`
+	TotalUnit MemoryUnit `json:"totalUnit"`
+	Percent   float64    `json:"percent"`
+}
+
+func (m *MemoryDomain) tidyValues() {
+	if m.Used > 0 && m.Total > 0 {
+		m.Percent = m.Used / m.Total * 100
+	}
+	m.Total, m.TotalUnit = tidyPrefix(m.Total, 1)
+	m.Used, m.UsedUnit = tidyPrefix(m.Used, 1)
+}
+
+type LoadavgDomain struct {
+	Loadavg1  float32 `json:"loadavg1"`
+	Loadavg5  float32 `json:"loadavg5"`
+	Loadavg15 float32 `json:"loadavg15"`
+}
+
+type TempDeviceDomain struct {
+	Name    string             `json:"name"`
+	Sensors []TempSensorDomain `json:"sensors"`
+}
+
+type TempSensorDomain struct {
+	Name string  `json:"name"`
+	Temp float32 `json:"temp"`
+}
+
+type DiskUsageDomain struct {
+	Path      string     `json:"path"`
+	Used      float64    `json:"used"`
+	UsedUnit  MemoryUnit `json:"usedUnit"`
+	Total     float64    `json:"total"`
+	TotalUnit MemoryUnit `json:"totalUnit"`
+	Percent   float64    `json:"percent"`
+}
+
+type NetspeedDomain struct {
+	Name            string     `json:"name"`
+	Download        float64    `json:"download"`
+	DownloadUnit    MemoryUnit `json:"downloadUnit"`
+	DownloadPercent float64    `json:"downloadPercent"`
+	Upload          float64    `json:"upload"`
+	UploadUnit      MemoryUnit `json:"uploadUnit"`
+	UploadPercent   float64    `json:"uploadPercent"`
+}
+
+type ProcDomain struct {
+	PID      int        `json:"pid"`
+	Comm     string     `json:"comm"`
+	State    string     `json:"state"`
+	Cpu      float32    `json:"cpu"`
+	RamUsage float64    `json:"ram"`
+	RamUnit  MemoryUnit `json:"ramUnit"`
+}
+
+func (n *NetspeedDomain) tidyValues() {
+	n.DownloadPercent = n.Download / 104857600 * 100
+	n.UploadPercent = n.Upload / 104857600 * 100
+
+	n.Download, n.DownloadUnit = tidyPrefix(n.Download, 0)
+	n.Upload, n.UploadUnit = tidyPrefix(n.Upload, 0)
+}
+
+func (d *DiskUsageDomain) tidyValues() {
+	if d.Used > 0 && d.Total > 0 {
+		d.Percent = d.Used / d.Total * 100
+	}
+	d.Used, d.UsedUnit = tidyPrefix(d.Used, 0)
+	d.Total, d.TotalUnit = tidyPrefix(d.Total, 0)
+}
+
+func (p *ProcDomain) tidyValues() {
+	p.RamUsage, p.RamUnit = tidyPrefix(p.RamUsage, 0)
+}
+
+func tidyPrefix(value float64, start byte) (float64, MemoryUnit) {
+	result := value
+	resultUnit := MemoryUnit(start)
+	for i := start; i < 5; i++ {
+		if val := result / 1024; val < 1 {
+			break
+		} else {
+			result = val
+			resultUnit = MemoryUnit(i + 1)
+		}
+	}
+	return result, resultUnit
+}

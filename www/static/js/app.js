@@ -23,7 +23,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 				if (context.loading > 0) {
 					loadingOverlay[0].style.display = 'flex';
 				}
-			}, 550)
+			}, 600)
 		} else {
 			loadingOverlay[0].style.display = 'none';
 			context.loading = 0;
@@ -166,8 +166,6 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 			console.log('changed interval ' + context.intervalValue);
 		} else if (Number(context.intervalValue) == 0) {
 			clearInterval(context.interval);
-		} else {
-			console.log('he?')
 		}
 	};
 
