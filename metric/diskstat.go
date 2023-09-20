@@ -1,6 +1,7 @@
 package metric
 
 import (
+	"bufio"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 )
 
 const (
+	pathDiskstats = "/proc/diskstats"
 	pathBlocks    = "/sys/class/block/"
 	pathBlockStat = "stat"
 	pathBlockSize = "queue/physical_block_size"
@@ -16,6 +18,8 @@ const (
 
 type Diskstat struct {
 	Name       string
+	Major      int
+	Minor      int
 	SectorSize int
 	Riops      uint64
 	Read       float64
@@ -50,21 +54,33 @@ func LoadDiskstats(doneCh chan bool, bundle *Bundle) {
 func loadDiskstats() []*Diskstat {
 	result := make([]*Diskstat, 0)
 
-	blocks, _ := readDir(pathBlocks)
-	for _, b := range blocks {
-		block := &Diskstat{Name: b.Name()}
-		d, _ := os.ReadFile(filepath.Join(pathBlocks, b.Name(), pathBlockSize))
+	f, err := os.Open(pathDiskstats)
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		data := strings.Fields(scanner.Text())
+
+		block := &Diskstat{Name: data[2]}
+		block.Major, _ = strconv.Atoi(data[0])
+		block.Minor, _ = strconv.Atoi(data[1])
+		if block.Minor > 0 {
+			continue
+		}
+
+		d, _ := os.ReadFile(filepath.Join(pathBlocks, block.Name, pathBlockSize))
 		block.SectorSize, _ = strconv.Atoi(strings.TrimSpace(string(d)))
 		if block.SectorSize == 0 {
 			continue
 		}
 
-		s, _ := os.ReadFile(filepath.Join(pathBlocks, b.Name(), pathBlockStat))
-		data := strings.Fields(string(s))
-		block.Riops, _ = strconv.ParseUint(data[0], 10, 64)
-		block.Read, _ = strconv.ParseFloat(data[2], 64)
-		block.Wiops, _ = strconv.ParseUint(data[4], 10, 64)
-		block.Write, _ = strconv.ParseFloat(data[6], 64)
+		block.Riops, _ = strconv.ParseUint(data[3], 10, 64)
+		block.Read, _ = strconv.ParseFloat(data[5], 64)
+		block.Wiops, _ = strconv.ParseUint(data[7], 10, 64)
+		block.Write, _ = strconv.ParseFloat(data[9], 64)
 		result = append(result, block)
 	}
 
