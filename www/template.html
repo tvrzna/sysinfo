@@ -23,90 +23,126 @@
 			</select>
 		</div>
 		<div id="boxes">
-			<div class="half-box">
-				<span class="box-title">cpu</span>
-				<div class="cpu-cores">
-					<bar ajsf-repeat="sysinfo.cpu.cores" ajsf-model="item"></bar>
-				</div>
-			</div>
-			<div class="half-box diskusage">
-				<span class="box-title">diskusage</span>
-				<circle ajsf-repeat="sysinfo.diskusage" ajsf-model="item" size="8.5"></circle>
-			</div>
-			<div class="half-box">
-				<span class="box-title">memory</span>
-				<div class="memory">
-					<bar ajsf-repeat="sysinfo.memory" ajsf-model="item"></bar>
-				</div>
-			</div>
-			<div class="half-box system">
-				<span class="box-title">system</span>
-				<div>
-					Load Average:
-					<span ajsf-text="sysinfo.loadavg1"></span>
-					<span ajsf-text="sysinfo.loadavg5"></span>
-					<span ajsf-text="sysinfo.loadavg15"></span>
-				</div>
-				<div>
-					Uptime:
-					<span ajsf-text="sysinfo.uptime"></span>
-				</div>
-			</div>
-			<div class="half-box">
-				<span class="box-title">temps</span>
-				<div class="temps">
-					<div ajsf-repeat="sysinfo.tempDevices">
-						<span ajsf-text="item.name"></span>
-						<div class="temp-sensors">
-							<circle ajsf-repeat="item.temps" ajsf-model="item" size="4"></circle>
-						</div>
+			{{ range .WidgetLayout }}
+				{{ $boxClass := "third-box" }}
+				{{ if eq (len .) 1 }}
+					{{ $boxClass = "box" }}
+				{{ else if eq (len .) 2 }}
+					{{ $boxClass = "half-box" }}
+				{{ end }}
+				{{ range $t := . }}
+					<div class="{{ $boxClass }}">
+						<span class="box-title">{{ $t }}</span>
+						{{ if eq $t "cpu" }}
+							{{ template "cpu" }}
+						{{ else if eq $t "diskstats" }}
+							{{ template "diskstats" }}
+						{{ else if eq $t "diskusage" }}
+							{{ template "diskusage" }}
+						{{ else if eq $t "memory" }}
+							{{ template "memory" }}
+						{{ else if eq $t "netspeed" }}
+							{{ template "netspeed" }}
+						{{ else if eq $t "system" }}
+							{{ template "system" }}
+						{{ else if eq $t "temps" }}
+							{{ template "temps" }}
+						{{ else if eq $t "top" }}
+							{{ template "top" }}
+						{{ end }}
 					</div>
-				</div>
-			</div>
-			<div class="half-box">
-				<span class="box-title">netspeed</span>
-				<div class="netspeeds">
-					<div ajsf-repeat="sysinfo.netspeed">
-						<span ajsf-text="item.name"></span>
-						<div class="netspeed">
-							<circle ajsf-repeat="item.data" ajsf-model="item" size="4"></circle>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="half-box top">
-				<span class="box-title">top</span>
-				<table>
-					<tr>
-						<th>pid</th>
-						<th>state</th>
-						<th>cpu%</th>
-						<th>ram</th>
-						<th>command</th>
-					</tr>
-					<tr ajsf-repeat="sysinfo.top">
-						<td ajsf-text="item.pid"></td>
-						<td ajsf-text="item.state"></td>
-						<td ajsf-text="item.cpu"></td>
-						<td ajsf-text="item.ram | suffix item.ramUnit"></td>
-						<td ajsf-text="item.comm"></td>
-					</tr>
-				</table>
-			</div>
-			<div class="half-box">
-				<span class="box-title">diskstats</span>
-				<div class="diskstats">
-					<div ajsf-repeat="sysinfo.diskstats">
-						<span ajsf-text="item.name"></span>
-						<div>
-							<circle ajsf-repeat="item.speed" ajsf-model="item" size="5"></circle>
-							<circle ajsf-repeat="item.iops" ajsf-model="item" size="5"></circle>
-						</div>
-					</div>
-				</div>
-			</div>
+				{{ end }}
+			{{ end }}
 		</div>
 		<div id="footer">Powered by <a href="https://github.com/tvrzna/sysinfo" target="_blank">sysinfo</a> {{.Version}}</div>
 		<script type="text/javascript" src='{{.UrlFor "static/js/app.js" }}'></script>
 	</body>
 </html>
+
+{{ define "cpu" }}
+<div class="cpu-cores">
+	<bar ajsf-repeat="sysinfo.cpu.cores" ajsf-model="item"></bar>
+</div>
+{{ end }}
+
+{{ define "diskstats" }}
+<div class="diskstats">
+	<div ajsf-repeat="sysinfo.diskstats">
+		<span ajsf-text="item.name"></span>
+		<div>
+			<circle ajsf-repeat="item.speed" ajsf-model="item" size="5"></circle>
+			<circle ajsf-repeat="item.iops" ajsf-model="item" size="5"></circle>
+		</div>
+	</div>
+</div>
+{{ end }}
+
+{{ define "diskusage" }}
+<div class="diskusage">
+	<circle ajsf-repeat="sysinfo.diskusage" ajsf-model="item" size="8.5"></circle>
+</div>
+{{ end }}
+
+{{ define "memory" }}
+<div class="memory">
+	<bar ajsf-repeat="sysinfo.memory" ajsf-model="item"></bar>
+</div>
+{{ end }}
+
+{{ define "netspeed" }}
+<div class="netspeeds">
+	<div ajsf-repeat="sysinfo.netspeed">
+		<span ajsf-text="item.name"></span>
+		<div class="netspeed">
+			<circle ajsf-repeat="item.data" ajsf-model="item" size="4"></circle>
+		</div>
+	</div>
+</div>
+{{ end }}
+
+{{ define "system" }}
+<div class="system">
+	<div>
+		Load Average:
+		<span ajsf-text="sysinfo.loadavg1"></span>
+		<span ajsf-text="sysinfo.loadavg5"></span>
+		<span ajsf-text="sysinfo.loadavg15"></span>
+	</div>
+	<div>
+		Uptime:
+		<span ajsf-text="sysinfo.uptime"></span>
+	</div>
+</div>
+{{ end }}
+
+{{ define "temps" }}
+<div class="temps">
+	<div ajsf-repeat="sysinfo.tempDevices">
+		<span ajsf-text="item.name"></span>
+		<div class="temp-sensors">
+			<circle ajsf-repeat="item.temps" ajsf-model="item" size="4"></circle>
+		</div>
+	</div>
+</div>
+{{ end }}
+
+{{ define "top" }}
+<div class="top">
+	<table>
+		<tr>
+			<th>pid</th>
+			<th>state</th>
+			<th>cpu%</th>
+			<th>ram</th>
+			<th>command</th>
+		</tr>
+		<tr ajsf-repeat="sysinfo.top">
+			<td ajsf-text="item.pid"></td>
+			<td ajsf-text="item.state"></td>
+			<td ajsf-text="item.cpu"></td>
+			<td ajsf-text="item.ram | suffix item.ramUnit"></td>
+			<td ajsf-text="item.comm"></td>
+		</tr>
+	</table>
+</div>
+{{ end }}

@@ -72,15 +72,19 @@ body {
 	flex-basis: 100%;
 }
 
-#boxes .half-box {
+#boxes .half-box, #boxes .third-box {
 	flex: 1;
 }
 
-#boxes .box, #boxes .half-box {
+#boxes .box, #boxes .half-box, #boxes .third-box {
 	border: thin solid #FFFFFF10;
 	min-width: 32.5rem;
 	padding: 0.25rem;
 	position: relative;
+}
+
+#boxes .third-box {
+	min-width: 24rem;
 }
 
 #boxes .box-title {
@@ -242,7 +246,9 @@ bar {
 .system {
 	display: flex;
 	flex-direction: column;
+	height: 100%;
 	justify-content: center;
+	width: 100%;
 }
 
 #footer {
@@ -261,7 +267,7 @@ bar {
 		margin: 0.125rem;
 	}
 
-	#boxes .box, #boxes .half-box {
+	#boxes .box, #boxes .half-box, #boxes .third-box {
 		min-width: 100%;
 		padding: 0.25rem 0;
 	}

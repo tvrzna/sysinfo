@@ -2,13 +2,13 @@ package main
 
 import (
 	"embed"
+	"html/template"
 	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"text/template"
 )
 
 //go:embed www
@@ -22,9 +22,10 @@ type context struct {
 }
 
 type PageContext struct {
-	c       *context
-	Name    string
-	Version string
+	c            *context
+	Name         string
+	Version      string
+	WidgetLayout [][]string
 }
 
 func (p *PageContext) UrlFor(path string) string {
@@ -83,6 +84,12 @@ func (c *context) handleStop() {
 func (c *context) handleIndex(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "" || r.URL.Path == "/" || r.URL.Path == "index.html" {
 		p := &PageContext{c: c, Name: c.conf.name, Version: c.conf.getVersion()}
+		p.WidgetLayout = [][]string{
+			{"cpu", "diskusage"},
+			{"memory", "system"},
+			{"temps", "netspeed"},
+			{"top", "diskstats"},
+		}
 		w.Header().Set("content-type", "text/html")
 
 		if err := c.layout.Execute(w, p); err != nil {
