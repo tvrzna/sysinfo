@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -20,7 +21,7 @@ type Netspeed struct {
 	Upload   float64
 }
 
-func LoadNetspeed(doneCh chan bool, bundle *Bundle) {
+func LoadNetspeed(wg *sync.WaitGroup, bundle *Bundle) {
 	previous := loadNetspeed()
 	time.Sleep(500 * time.Millisecond)
 	bundle.Netspeed = loadNetspeed()
@@ -38,7 +39,7 @@ func LoadNetspeed(doneCh chan bool, bundle *Bundle) {
 		n.Download = (n.Download - o.Download) * 2
 		n.Upload = (n.Upload - o.Upload) * 2
 	}
-	doneCh <- true
+	wg.Done()
 }
 
 func loadNetspeed() []*Netspeed {

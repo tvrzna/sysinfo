@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -30,14 +31,14 @@ type Cpu struct {
 	Usage      float32
 }
 
-func LoadCpu(doneCh chan bool, bundle *Bundle) {
+func LoadCpu(wg *sync.WaitGroup, bundle *Bundle) {
 	previous := loadCpu()
 	time.Sleep(500 * time.Millisecond)
 	bundle.Cpu = loadCpu()
 	for i := 0; i < len(bundle.Cpu.Cores); i++ {
 		bundle.Cpu.Cores[i].calcUsage(previous.Cores[i])
 	}
-	doneCh <- true
+	wg.Done()
 }
 
 func (c *Cpu) calcUsage(previous *Cpu) {

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -40,7 +41,7 @@ func (t *TopProcess) getTotal() uint64 {
 	return t.Utime + t.Stime + uint64(t.Cutime+t.Cstime)
 }
 
-func LoadTop(doneCh chan bool, bundle *Bundle) {
+func LoadTop(wg *sync.WaitGroup, bundle *Bundle) {
 	previous := loadTop()
 	time.Sleep(400 * time.Millisecond)
 	bundle.Top = loadTop()
@@ -48,7 +49,7 @@ func LoadTop(doneCh chan bool, bundle *Bundle) {
 	for _, p := range bundle.Top {
 		p.calc(previous[p.PID])
 	}
-	doneCh <- true
+	wg.Done()
 }
 
 func loadTop() map[int]*TopProcess {

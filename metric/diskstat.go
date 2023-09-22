@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -27,7 +28,7 @@ type Diskstat struct {
 	Write      float64
 }
 
-func LoadDiskstats(doneCh chan bool, bundle *Bundle) {
+func LoadDiskstats(wg *sync.WaitGroup, bundle *Bundle) {
 	previous := loadDiskstats()
 	time.Sleep(500 * time.Millisecond)
 	bundle.Diskstats = loadDiskstats()
@@ -48,7 +49,7 @@ func LoadDiskstats(doneCh chan bool, bundle *Bundle) {
 		b.Wiops = b.Wiops - p.Wiops
 		b.Write = (b.Write - p.Write) * 2 * float64(512)
 	}
-	doneCh <- true
+	wg.Done()
 }
 
 func loadDiskstats() []*Diskstat {

@@ -136,7 +136,7 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 }
 
 func (c *restContext) loadMetrics() *metric.Bundle {
-	parallelMetrics := make([]func(chan bool, *metric.Bundle), 0)
+	parallelMetrics := make([]func(*sync.WaitGroup, *metric.Bundle), 0)
 	if c.conf.widgetsIndex["cpu"] {
 		parallelMetrics = append(parallelMetrics, metric.LoadCpu)
 	}
@@ -151,13 +151,12 @@ func (c *restContext) loadMetrics() *metric.Bundle {
 	}
 
 	bundle := &metric.Bundle{}
-	doneCh := make(chan bool, len(parallelMetrics))
+	wg := &sync.WaitGroup{}
 	for _, f := range parallelMetrics {
-		go f(doneCh, bundle)
+		wg.Add(1)
+		go f(wg, bundle)
 	}
-	for i := 0; i < cap(doneCh); i++ {
-		<-doneCh
-	}
+	wg.Wait()
 
 	if c.conf.widgetsIndex["cpu"] {
 		bundle.Cpufreq = metric.LoadCpufreq()
