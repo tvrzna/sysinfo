@@ -40,7 +40,7 @@ Options:
 	-n, --name [NAME]		name of application to be displayed
 	-p, --port [PORT]		sets port for listening
 	-a, --app-url [APP_URL]		application url (if behind proxy)
-	-w, --widget-layout [LAYOUT]	custom layout of widgets, unused widgets won't load their data
+	-w, --widget-layout [LAYOUT]	custom layout of widgets
 
 Widgets:
 	` + strings.Join(knownWidgets, ", ") + `
