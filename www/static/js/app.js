@@ -39,120 +39,138 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 		$.get('sysinfo.json', {
 			success: data => {
 				context.data = JSON.parse(data);
-				context.sysinfo.memory = [
-					{
-						label: context.data.ram.used.toFixed(1) + context.data.ram.usedUnit + '/' + context.data.ram.total.toFixed(1) + context.data.ram.totalUnit,
-						percent: context.data.ram.percent,
-						legend: 'RAM'
-					},
-					{
-						label: context.data.swap.used.toFixed(1) + context.data.swap.usedUnit + '/' + context.data.swap.total.toFixed(1) + context.data.swap.totalUnit,
-						percent: context.data.swap.percent,
-						legend: 'SWAP'
-					},
-				];
-
-				context.sysinfo.cpu.cores = [];
-				for (var i = 0; i < context.data.cpu.cores.length; i++) {
-					context.sysinfo.cpu.cores[i] = {
-						legend: context.data.cpu.cores[i].id,
-						percent: context.data.cpu.cores[i].usage,
-						label: context.data.cpu.cores[i].usage.toFixed(0) + '% ' + context.data.cpu.cores[i].mhz.toFixed(0) + 'MHz'
-					};
+				if (context.data.ram != undefined && context.data.swap != undefined) {
+					context.sysinfo.memory = [
+						{
+							label: context.data.ram.used.toFixed(1) + context.data.ram.usedUnit + '/' + context.data.ram.total.toFixed(1) + context.data.ram.totalUnit,
+							percent: context.data.ram.percent,
+							legend: 'RAM'
+						},
+						{
+							label: context.data.swap.used.toFixed(1) + context.data.swap.usedUnit + '/' + context.data.swap.total.toFixed(1) + context.data.swap.totalUnit,
+							percent: context.data.swap.percent,
+							legend: 'SWAP'
+						},
+					];
 				}
 
-				context.sysinfo.loadavg1 = context.data.loadavg.loadavg1.toFixed(2);
-				context.sysinfo.loadavg5 = context.data.loadavg.loadavg5.toFixed(2);
-				context.sysinfo.loadavg15 = context.data.loadavg.loadavg15.toFixed(2);
-
-				context.sysinfo.tempDevices = [];
-				for (var i = 0; i < context.data.temps.length; i++) {
-					context.sysinfo.tempDevices[i] = {
-						name: context.data.temps[i].name,
-						temps: []
-					};
-					for (var j = 0; j < context.data.temps[i].sensors.length; j++) {
-						context.sysinfo.tempDevices[i].temps[j] = {
-							label: context.data.temps[i].sensors[j].temp.toFixed(0) + '°C',
-							legend: context.data.temps[i].sensors[j].name,
-							percent: context.data.temps[i].sensors[j].temp/130*100
+				if (context.data.cpu != undefined) {
+					context.sysinfo.cpu.cores = [];
+					for (var i = 0; i < context.data.cpu.cores.length; i++) {
+						context.sysinfo.cpu.cores[i] = {
+							legend: context.data.cpu.cores[i].id,
+							percent: context.data.cpu.cores[i].usage,
+							label: context.data.cpu.cores[i].usage.toFixed(0) + '% ' + context.data.cpu.cores[i].mhz.toFixed(0) + 'MHz'
 						};
 					}
 				}
 
-				context.sysinfo.diskusage = [];
-				for (var i = 0; i < context.data.diskusage.length; i++) {
-					context.sysinfo.diskusage[i] = {
-						label: context.data.diskusage[i].used.toFixed(0) + context.data.diskusage[i].usedUnit + '/' + context.data.diskusage[i].total.toFixed(0) + context.data.diskusage[i].totalUnit,
-						legend: context.data.diskusage[i].path,
-						percent: context.data.diskusage[i].percent
+				if (context.data.loadavg != undefined) {
+					context.sysinfo.loadavg1 = context.data.loadavg.loadavg1.toFixed(2);
+					context.sysinfo.loadavg5 = context.data.loadavg.loadavg5.toFixed(2);
+					context.sysinfo.loadavg15 = context.data.loadavg.loadavg15.toFixed(2);
+				}
+
+				if (context.data.temps != undefined) {
+					context.sysinfo.tempDevices = [];
+					for (var i = 0; i < context.data.temps.length; i++) {
+						context.sysinfo.tempDevices[i] = {
+							name: context.data.temps[i].name,
+							temps: []
+						};
+						for (var j = 0; j < context.data.temps[i].sensors.length; j++) {
+							context.sysinfo.tempDevices[i].temps[j] = {
+								label: context.data.temps[i].sensors[j].temp.toFixed(0) + '°C',
+								legend: context.data.temps[i].sensors[j].name,
+								percent: context.data.temps[i].sensors[j].temp/130*100
+							};
+						}
 					}
 				}
 
-				var days = Math.floor(context.data.uptime / 60 / 60 / 24);
-				var hours = Math.floor((context.data.uptime / 60 / 60)) - days * 24;
-				var minutes = Math.floor(context.data.uptime / 60) - (days * 24 + hours) * 60;
-				var seconds = context.data.uptime - ((days * 24 + hours) * 60 + minutes) * 60;
-				context.sysinfo.uptime = (days > 0 ? days + ' days, ' : '') + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
-
-				context.sysinfo.netspeed = [];
-				for (var i = 0; i < context.data.netspeed.length; i++) {
-					context.sysinfo.netspeed[i] = {
-						name: context.data.netspeed[i].name,
-						data: [{
-								label: context.data.netspeed[i].download.toFixed(1) + context.data.netspeed[i].downloadUnit,
-								legend: 'D',
-								percent: context.data.netspeed[i].downloadPercent
-							},
-							{
-								label: context.data.netspeed[i].upload.toFixed(1) + context.data.netspeed[i].uploadUnit,
-								legend: 'U',
-								percent: context.data.netspeed[i].uploadPercent
-							}
-						]
+				if (context.data.diskusage != undefined) {
+					context.sysinfo.diskusage = [];
+					for (var i = 0; i < context.data.diskusage.length; i++) {
+						context.sysinfo.diskusage[i] = {
+							label: context.data.diskusage[i].used.toFixed(0) + context.data.diskusage[i].usedUnit + '/' + context.data.diskusage[i].total.toFixed(0) + context.data.diskusage[i].totalUnit,
+							legend: context.data.diskusage[i].path,
+							percent: context.data.diskusage[i].percent
+						}
 					}
 				}
 
-				context.sysinfo.top = [];
-				for (var i = 0; i < context.data.top.length; i++) {
-					context.sysinfo.top[i] = {
-						pid: context.data.top[i].pid,
-						state: context.data.top[i].state,
-						comm: context.data.top[i].comm,
-						cpu: context.data.top[i].cpu.toFixed(2),
-						ram: context.data.top[i].ram.toFixed(2),
-						ramUnit: context.data.top[i].ramUnit
-					};
+				if (context.data.uptime != undefined) {
+					var days = Math.floor(context.data.uptime / 60 / 60 / 24);
+					var hours = Math.floor((context.data.uptime / 60 / 60)) - days * 24;
+					var minutes = Math.floor(context.data.uptime / 60) - (days * 24 + hours) * 60;
+					var seconds = context.data.uptime - ((days * 24 + hours) * 60 + minutes) * 60;
+					context.sysinfo.uptime = (days > 0 ? days + ' days, ' : '') + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
 				}
 
-				context.sysinfo.diskstats = [];
-				for (var i = 0; i < context.data.diskstats.length; i++) {
-					context.sysinfo.diskstats[i] = {
-						name: context.data.diskstats[i].name,
-						iops: [
-							{
-								label: context.data.diskstats[i].riops,
-								legend: 'R iops',
-								percent: context.data.diskstats[i].riops * 20 / 100
-							},
-							{
-								label: context.data.diskstats[i].wiops,
-								legend: 'W iosp',
-								percent: context.data.diskstats[i].wiops * 20 / 100
-							}
-						],
-						speed: [
-							{
-								label: context.data.diskstats[i].read.toFixed(2) + context.data.diskstats[i].readUnit,
-								legend: 'R',
-								percent: context.data.diskstats[i].readPercent
-							},
-							{
-								label: context.data.diskstats[i].write.toFixed(2) + context.data.diskstats[i].writeUnit,
-								legend: 'W',
-								percent: context.data.diskstats[i].writePercent
-							}
-						]
+				if (context.data.netspeed != undefined) {
+					context.sysinfo.netspeed = [];
+					for (var i = 0; i < context.data.netspeed.length; i++) {
+						context.sysinfo.netspeed[i] = {
+							name: context.data.netspeed[i].name,
+							data: [{
+									label: context.data.netspeed[i].download.toFixed(1) + context.data.netspeed[i].downloadUnit,
+									legend: 'D',
+									percent: context.data.netspeed[i].downloadPercent
+								},
+								{
+									label: context.data.netspeed[i].upload.toFixed(1) + context.data.netspeed[i].uploadUnit,
+									legend: 'U',
+									percent: context.data.netspeed[i].uploadPercent
+								}
+							]
+						}
+					}
+				}
+
+				if (context.data.top != undefined) {
+					context.sysinfo.top = [];
+					for (var i = 0; i < context.data.top.length; i++) {
+						context.sysinfo.top[i] = {
+							pid: context.data.top[i].pid,
+							state: context.data.top[i].state,
+							comm: context.data.top[i].comm,
+							cpu: context.data.top[i].cpu.toFixed(2),
+							ram: context.data.top[i].ram.toFixed(2),
+							ramUnit: context.data.top[i].ramUnit
+						};
+					}
+				}
+
+				if (context.data.diskstats != undefined) {
+					context.sysinfo.diskstats = [];
+					for (var i = 0; i < context.data.diskstats.length; i++) {
+						context.sysinfo.diskstats[i] = {
+							name: context.data.diskstats[i].name,
+							iops: [
+								{
+									label: context.data.diskstats[i].riops,
+									legend: 'R iops',
+									percent: context.data.diskstats[i].riops * 20 / 100
+								},
+								{
+									label: context.data.diskstats[i].wiops,
+									legend: 'W iosp',
+									percent: context.data.diskstats[i].wiops * 20 / 100
+								}
+							],
+							speed: [
+								{
+									label: context.data.diskstats[i].read.toFixed(2) + context.data.diskstats[i].readUnit,
+									legend: 'R',
+									percent: context.data.diskstats[i].readPercent
+								},
+								{
+									label: context.data.diskstats[i].write.toFixed(2) + context.data.diskstats[i].writeUnit,
+									legend: 'W',
+									percent: context.data.diskstats[i].writePercent
+								}
+							]
+						}
 					}
 				}
 

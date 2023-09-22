@@ -12,13 +12,14 @@ import (
 )
 
 type restContext struct {
+	conf     *config
 	m        *sync.Mutex
 	lastLoad int64
 	sysinfo  *SysinfoDomain
 }
 
-func initRestContext() *restContext {
-	return &restContext{m: &sync.Mutex{}}
+func initRestContext(conf *config) *restContext {
+	return &restContext{m: &sync.Mutex{}, conf: conf}
 }
 
 func (c *restContext) HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
@@ -38,100 +39,142 @@ func (c *restContext) HandleSysinfoData(w http.ResponseWriter, r *http.Request) 
 func (c *restContext) loadSysinfo() *SysinfoDomain {
 	result := &SysinfoDomain{}
 
-	bundle := &metric.Bundle{}
-	doneCh := make(chan bool, 4)
-
-	go metric.LoadCpu(doneCh, bundle)
-	go metric.LoadNetspeed(doneCh, bundle)
-	go metric.LoadTop(doneCh, bundle)
-	go metric.LoadDiskstats(doneCh, bundle)
-
-	for i := 0; i < cap(doneCh); i++ {
-		<-doneCh
-	}
-
-	bundle.Cpufreq = metric.LoadCpufreq()
-	bundle.Loadavg = metric.GetLoadavg()
-	bundle.Mem = metric.LoadMemInfo()
-	bundle.Temps = metric.LoadTemps()
-	bundle.Diskusage = metric.LoadDiskUsage()
-	bundle.Uptime = metric.LoadUptime()
+	// Load metrics
+	bundle := c.loadMetrics()
 
 	// Set CPU
-	result.CPU = &CpuDomain{
-		Cores: make([]*CpuCoreDomain, len(bundle.Cpu.Cores)),
-	}
-	for i := 0; i < len(bundle.Cpu.Cores); i++ {
-		result.CPU.Cores[i] = &CpuCoreDomain{
-			Id:    bundle.Cpufreq[i].Processor,
-			Usage: bundle.Cpu.Cores[i].Usage,
-			MHz:   bundle.Cpufreq[i].Freq,
+	if c.conf.widgetsIndex["cpu"] {
+		result.CPU = &CpuDomain{
+			Cores: make([]*CpuCoreDomain, len(bundle.Cpu.Cores)),
+		}
+		for i := 0; i < len(bundle.Cpu.Cores); i++ {
+			result.CPU.Cores[i] = &CpuCoreDomain{
+				Id:    bundle.Cpufreq[i].Processor,
+				Usage: bundle.Cpu.Cores[i].Usage,
+				MHz:   bundle.Cpufreq[i].Freq,
+			}
 		}
 	}
 
 	// Set RAM & Swap
-	result.RAM = &MemoryDomain{Used: float64(bundle.Mem.MemTotal - bundle.Mem.MemAvailable), Total: float64(bundle.Mem.MemTotal)}
-	result.SWAP = &MemoryDomain{Used: float64(bundle.Mem.SwapTotal - bundle.Mem.SwapFree), Total: float64(bundle.Mem.SwapTotal)}
+	if c.conf.widgetsIndex["memory"] {
+		result.RAM = &MemoryDomain{Used: float64(bundle.Mem.MemTotal - bundle.Mem.MemAvailable), Total: float64(bundle.Mem.MemTotal)}
+		result.SWAP = &MemoryDomain{Used: float64(bundle.Mem.SwapTotal - bundle.Mem.SwapFree), Total: float64(bundle.Mem.SwapTotal)}
 
-	result.RAM.tidyValues()
-	result.SWAP.tidyValues()
+		result.RAM.tidyValues()
+		result.SWAP.tidyValues()
+	}
 
-	// Set Loadavgs
-	result.Loadavg = &LoadavgDomain{Loadavg1: bundle.Loadavg.Loadavg1, Loadavg5: bundle.Loadavg.Loadavg5, Loadavg15: bundle.Loadavg.Loadavg15}
+	// Set system
+	if c.conf.widgetsIndex["system"] {
+		result.Loadavg = &LoadavgDomain{Loadavg1: bundle.Loadavg.Loadavg1, Loadavg5: bundle.Loadavg.Loadavg5, Loadavg15: bundle.Loadavg.Loadavg15}
+		result.Uptime = bundle.Uptime
+	}
 
 	// Set temps
-	result.Temps = make([]*TempDeviceDomain, 0)
-	for _, t := range bundle.Temps {
-		device := &TempDeviceDomain{Name: t.Name, Sensors: make([]TempSensorDomain, 0)}
-		for _, s := range t.Temps {
-			device.Sensors = append(device.Sensors, TempSensorDomain{Name: s.Label, Temp: float32(s.Input) / 1000})
+	if c.conf.widgetsIndex["temps"] {
+		result.Temps = make([]*TempDeviceDomain, 0)
+		for _, t := range bundle.Temps {
+			device := &TempDeviceDomain{Name: t.Name, Sensors: make([]TempSensorDomain, 0)}
+			for _, s := range t.Temps {
+				device.Sensors = append(device.Sensors, TempSensorDomain{Name: s.Label, Temp: float32(s.Input) / 1000})
+			}
+			result.Temps = append(result.Temps, device)
 		}
-		result.Temps = append(result.Temps, device)
 	}
 
 	// Set diskusage
-	result.DiskUsage = make([]*DiskUsageDomain, 0)
-	for _, d := range bundle.Diskusage {
-		diskUsage := &DiskUsageDomain{Path: d.Path, Used: float64(d.UsedSize), Total: float64(d.TotalSize)}
-		diskUsage.tidyValues()
-		result.DiskUsage = append(result.DiskUsage, diskUsage)
+	if c.conf.widgetsIndex["diskusage"] {
+		result.DiskUsage = make([]*DiskUsageDomain, 0)
+		for _, d := range bundle.Diskusage {
+			diskUsage := &DiskUsageDomain{Path: d.Path, Used: float64(d.UsedSize), Total: float64(d.TotalSize)}
+			diskUsage.tidyValues()
+			result.DiskUsage = append(result.DiskUsage, diskUsage)
+		}
 	}
-
-	// Set uptime
-	result.Uptime = bundle.Uptime
 
 	// Set netspeed
-	result.Netspeed = make([]*NetspeedDomain, 0)
-	for _, n := range bundle.Netspeed {
-		netspeed := &NetspeedDomain{Name: n.Name, Download: n.Download, Upload: n.Upload}
-		netspeed.tidyValues()
-		result.Netspeed = append(result.Netspeed, netspeed)
+	if c.conf.widgetsIndex["netspeed"] {
+		result.Netspeed = make([]*NetspeedDomain, 0)
+		for _, n := range bundle.Netspeed {
+			netspeed := &NetspeedDomain{Name: n.Name, Download: n.Download, Upload: n.Upload}
+			netspeed.tidyValues()
+			result.Netspeed = append(result.Netspeed, netspeed)
+		}
 	}
 
-	// Set Proc
-	result.Top = make([]*ProcDomain, 0)
-	for _, p := range bundle.Top {
-		pid := &ProcDomain{PID: p.PID, Comm: p.Comm[1 : len(p.Comm)-1], State: string(p.State), Cpu: p.CpuUsage, RamUsage: float64(p.RamUsage)}
-		pid.tidyValues()
-		result.Top = append(result.Top, pid)
-	}
-	sort.Slice(result.Top, func(i, j int) bool {
-		if result.Top[i].Cpu == result.Top[j].Cpu {
-			return (result.Top[i].RamUsage * (math.Pow(1024, float64(result.Top[i].RamUnit)))) > (result.Top[j].RamUsage * (math.Pow(1024, float64(result.Top[j].RamUnit))))
+	// Set top
+	if c.conf.widgetsIndex["top"] {
+		result.Top = make([]*ProcDomain, 0)
+		for _, p := range bundle.Top {
+			pid := &ProcDomain{PID: p.PID, Comm: p.Comm[1 : len(p.Comm)-1], State: string(p.State), Cpu: p.CpuUsage, RamUsage: float64(p.RamUsage)}
+			pid.tidyValues()
+			result.Top = append(result.Top, pid)
 		}
-		return result.Top[i].Cpu > result.Top[j].Cpu
-	})
-	if len(result.Top) > 20 {
-		result.Top = result.Top[:20]
+		sort.Slice(result.Top, func(i, j int) bool {
+			if result.Top[i].Cpu == result.Top[j].Cpu {
+				return (result.Top[i].RamUsage * (math.Pow(1024, float64(result.Top[i].RamUnit)))) > (result.Top[j].RamUsage * (math.Pow(1024, float64(result.Top[j].RamUnit))))
+			}
+			return result.Top[i].Cpu > result.Top[j].Cpu
+		})
+		if len(result.Top) > 20 {
+			result.Top = result.Top[:20]
+		}
 	}
 
 	// Set diskstats
-	result.Diskstats = make([]*DiskstatDomain, 0)
-	for _, d := range bundle.Diskstats {
-		diskstat := &DiskstatDomain{Name: d.Name, Riops: d.Riops, Read: d.Read, Wiops: d.Wiops, Write: d.Write}
-		diskstat.tidyValues()
-		result.Diskstats = append(result.Diskstats, diskstat)
+	if c.conf.widgetsIndex["diskstats"] {
+		result.Diskstats = make([]*DiskstatDomain, 0)
+		for _, d := range bundle.Diskstats {
+			diskstat := &DiskstatDomain{Name: d.Name, Riops: d.Riops, Read: d.Read, Wiops: d.Wiops, Write: d.Write}
+			diskstat.tidyValues()
+			result.Diskstats = append(result.Diskstats, diskstat)
+		}
 	}
 
 	return result
+}
+
+func (c *restContext) loadMetrics() *metric.Bundle {
+	parallelMetrics := make([]func(chan bool, *metric.Bundle), 0)
+	if c.conf.widgetsIndex["cpu"] {
+		parallelMetrics = append(parallelMetrics, metric.LoadCpu)
+	}
+	if c.conf.widgetsIndex["netspeed"] {
+		parallelMetrics = append(parallelMetrics, metric.LoadNetspeed)
+	}
+	if c.conf.widgetsIndex["top"] {
+		parallelMetrics = append(parallelMetrics, metric.LoadTop)
+	}
+	if c.conf.widgetsIndex["diskstats"] {
+		parallelMetrics = append(parallelMetrics, metric.LoadDiskstats)
+	}
+
+	bundle := &metric.Bundle{}
+	doneCh := make(chan bool, len(parallelMetrics))
+	for _, f := range parallelMetrics {
+		go f(doneCh, bundle)
+	}
+	for i := 0; i < cap(doneCh); i++ {
+		<-doneCh
+	}
+
+	if c.conf.widgetsIndex["cpu"] {
+		bundle.Cpufreq = metric.LoadCpufreq()
+	}
+	if c.conf.widgetsIndex["system"] {
+		bundle.Loadavg = metric.GetLoadavg()
+		bundle.Uptime = metric.LoadUptime()
+	}
+	if c.conf.widgetsIndex["memory"] {
+		bundle.Mem = metric.LoadMemInfo()
+	}
+	if c.conf.widgetsIndex["temps"] {
+		bundle.Temps = metric.LoadTemps()
+	}
+	if c.conf.widgetsIndex["diskusage"] {
+		bundle.Diskusage = metric.LoadDiskUsage()
+	}
+
+	return bundle
 }

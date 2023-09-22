@@ -28,16 +28,16 @@ func (b *MemoryUnit) UnmarshalJSON(data []byte) error {
 }
 
 type SysinfoDomain struct {
-	CPU       *CpuDomain          `json:"cpu"`
-	RAM       *MemoryDomain       `json:"ram"`
-	SWAP      *MemoryDomain       `json:"swap"`
-	Loadavg   *LoadavgDomain      `json:"loadavg"`
-	Temps     []*TempDeviceDomain `json:"temps"`
-	DiskUsage []*DiskUsageDomain  `json:"diskusage"`
-	Uptime    uint64              `json:"uptime"`
-	Netspeed  []*NetspeedDomain   `json:"netspeed"`
-	Top       []*ProcDomain       `json:"top"`
-	Diskstats []*DiskstatDomain   `json:"diskstats"`
+	CPU       *CpuDomain          `json:"cpu,omitempty"`
+	RAM       *MemoryDomain       `json:"ram,omitempty"`
+	SWAP      *MemoryDomain       `json:"swap,omitempty"`
+	Loadavg   *LoadavgDomain      `json:"loadavg,omitempty"`
+	Temps     []*TempDeviceDomain `json:"temps,omitempty"`
+	DiskUsage []*DiskUsageDomain  `json:"diskusage,omitempty"`
+	Uptime    uint64              `json:"uptime,omitempty"`
+	Netspeed  []*NetspeedDomain   `json:"netspeed,omitempty"`
+	Top       []*ProcDomain       `json:"top,omitempty"`
+	Diskstats []*DiskstatDomain   `json:"diskstats,omitempty"`
 }
 
 type CpuDomain struct {

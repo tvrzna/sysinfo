@@ -9,6 +9,12 @@ Options:
 	-n, --name [NAME]		name of application to be displayed
 	-p, --port [PORT]		sets port for listening
 	-a, --app-url [APP_URL]		application url (if behind proxy)
+	-w, --widget-layout [LAYOUT]	custom layout of widgets, unused widgets won't load their data
+
+Widgets:
+	cpu, diskstats, diskusage, memory, netspeed, system, temps, top
+
+	default: 'cpu diskusage\n memory system\n temps netspeed\n top diskstats'
 ```
 
 ![](screenshot.png)
@@ -24,4 +30,4 @@ Options:
 - [X] Process watcher widget
 - [X] Shared results, if there is more data receivers, it should be handled by only one sysinfo load.
 - [X] Diskstats widget
-- [ ] Custom widget layout with possible configuration of widgets
+- [X] Custom widget layout

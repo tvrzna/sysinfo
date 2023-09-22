@@ -52,7 +52,7 @@ func (c *context) runWebServer() {
 
 	serverRoot, _ := fs.Sub(www, "www")
 	mux.Handle("/static/", http.FileServer(http.FS(serverRoot)))
-	mux.HandleFunc("/sysinfo.json", initRestContext().HandleSysinfoData)
+	mux.HandleFunc("/sysinfo.json", initRestContext(c.conf).HandleSysinfoData)
 	mux.HandleFunc("/", c.handleIndex)
 
 	c.webServer = &http.Server{Handler: mux, Addr: c.conf.getServerUri()}
@@ -83,13 +83,7 @@ func (c *context) handleStop() {
 
 func (c *context) handleIndex(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "" || r.URL.Path == "/" || r.URL.Path == "index.html" {
-		p := &PageContext{c: c, Name: c.conf.name, Version: c.conf.getVersion()}
-		p.WidgetLayout = [][]string{
-			{"cpu", "diskusage"},
-			{"memory", "system"},
-			{"temps", "netspeed"},
-			{"top", "diskstats"},
-		}
+		p := &PageContext{c: c, Name: c.conf.name, Version: c.conf.getVersion(), WidgetLayout: c.conf.widgets}
 		w.Header().Set("content-type", "text/html")
 
 		if err := c.layout.Execute(w, p); err != nil {
