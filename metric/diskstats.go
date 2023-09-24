@@ -65,12 +65,13 @@ func loadDiskstats() []*Diskstat {
 	for scanner.Scan() {
 		data := strings.Fields(scanner.Text())
 
+		if strings.HasPrefix(data[2], "loop") {
+			continue
+		}
+
 		block := &Diskstat{Name: data[2]}
 		block.Major, _ = strconv.Atoi(data[0])
 		block.Minor, _ = strconv.Atoi(data[1])
-		if block.Minor > 0 {
-			continue
-		}
 
 		d, _ := os.ReadFile(filepath.Join(pathBlocks, block.Name, pathBlockSize))
 		block.SectorSize, _ = strconv.Atoi(strings.TrimSpace(string(d)))
