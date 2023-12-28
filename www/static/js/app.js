@@ -154,7 +154,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 								},
 								{
 									label: context.data.diskstats[i].wiops,
-									legend: 'W iosp',
+									legend: 'W iops',
 									percent: context.data.diskstats[i].wiops * 20 / 100
 								}
 							],
