@@ -24,7 +24,6 @@ type TopProcess struct {
 	Cutime   int64
 	Cstime   int64
 	RSS      int64
-	RSSlim   int64
 	Now      uint64
 	CpuUsage float32
 	RamUsage uint64
@@ -34,7 +33,7 @@ func (t *TopProcess) calc(p *TopProcess) {
 	if p != nil {
 		t.CpuUsage = float32(1 / (float32(t.Now-p.Now) / 1000) * float32(t.getTotal()-p.getTotal()))
 	}
-	t.RamUsage = uint64(t.RSS-t.RSSlim) * uint64(os.Getpagesize())
+	t.RamUsage = uint64(t.RSS) * uint64(os.Getpagesize())
 }
 
 func (t *TopProcess) getTotal() uint64 {
@@ -77,7 +76,6 @@ func loadTop() map[int]*TopProcess {
 			p.Cutime, _ = strconv.ParseInt(data[15], 10, 64)
 			p.Cstime, _ = strconv.ParseInt(data[16], 10, 64)
 			p.RSS, _ = strconv.ParseInt(data[23], 10, 64)
-			p.RSSlim, _ = strconv.ParseInt(data[24], 10, 64)
 			p.Now = uint64(time.Now().UnixMilli())
 			result[p.PID] = p
 		}
