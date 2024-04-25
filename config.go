@@ -20,13 +20,14 @@ var knownWidgets = []string{"cpu", "diskstats", "diskusage", "memory", "netspeed
 type config struct {
 	name         string
 	appUrl       string
+	uri          string
 	port         int
 	widgets      [][]string
 	widgetsIndex map[string]bool
 }
 
 func loadConfig(arg []string) *config {
-	c := &config{"sysinfo", "", 1700, make([][]string, 0), make(map[string]bool)}
+	c := &config{"sysinfo", "", "", 1700, make([][]string, 0), make(map[string]bool)}
 
 	strWidgets := "cpu diskusage\\n memory system\\n temps netspeed\\n top diskstats"
 
@@ -39,6 +40,7 @@ Options:
 	-v, --version			print version
 	-n, --name [NAME]		name of application to be displayed
 	-p, --port [PORT]		sets port for listening
+	-u, --uri [URI]			sets uri (server:port) for listening
 	-a, --app-url [APP_URL]		application url (if behind proxy)
 	-w, --widget-layout [LAYOUT]	custom layout of widgets
 
@@ -53,6 +55,8 @@ Widgets:
 			os.Exit(0)
 		case "-n", "--name":
 			c.name = value
+		case "-u", "--uri":
+			c.uri = value
 		case "-p", "--port":
 			c.port, _ = strconv.Atoi(value)
 		case "-a", "--app-url":
@@ -68,6 +72,9 @@ Widgets:
 }
 
 func (c *config) getServerUri() string {
+	if c.uri != "" {
+		return c.uri
+	}
 	return "127.0.0.1:" + strconv.Itoa(c.port)
 }
 
