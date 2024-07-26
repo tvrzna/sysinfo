@@ -43,6 +43,8 @@
 							{{ template "memory" }}
 						{{ else if eq $t "netspeed" }}
 							{{ template "netspeed" }}
+						{{ else if eq $t "smartctl" }}
+							{{ template "smartctl" }}
 						{{ else if eq $t "system" }}
 							{{ template "system" }}
 						{{ else if eq $t "temps" }}
@@ -96,6 +98,31 @@
 		<div class="netspeed">
 			<circle ajsf-repeat="item.data" ajsf-model="item" size="4"></circle>
 		</div>
+	</div>
+</div>
+{{ end }}
+
+{{ define "smartctl" }}
+<div class="smartctl">
+	<div ajsf-repeat="sysinfo.smartctl">
+		<span ajsf-text="item.name"></span>
+		<span ajsf-text="'smart status:' | suffix item.smartStatusPassed | suffix ', pon time: ' | suffix item.powerOnTime | suffix ', power cycles: ' | suffix item.powerCycleCount | suffix ', temp: ' | suffix item.temp | suffix '°C'"></span>
+		<table>
+			<tr>
+				<th>name</th>
+				<th>value</th>
+				<th>worst</th>
+				<th>raw</th>
+				<th>flags</th>
+			</tr>
+			<tr ajsf-repeat="item.attributes">
+				<td ajsf-text="item.name"></td>
+				<td ajsf-text="item.value"></td>
+				<td ajsf-text="item.worst"></td>
+				<td ajsf-text="item.raw"></td>
+				<td ajsf-text="item.flags"></td>
+			</tr>
+		</table>
 	</div>
 </div>
 {{ end }}

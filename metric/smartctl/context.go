@@ -83,10 +83,12 @@ func (s *SmartctlContext) runMondayTasker() {
 
 		time.Sleep(duration)
 
+		log.Print(">> starting smartctl tests")
 		err := s.startShortTests()
 		if err != nil {
 			log.Print(err)
 		}
+		log.Print("<< finished smartctl tests")
 
 		time.Sleep(1 * time.Minute)
 	}

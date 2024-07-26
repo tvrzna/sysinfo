@@ -174,6 +174,30 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					}
 				}
 
+				if (context.data.smartctl != undefined) {
+					context.sysinfo.smartctl = [];
+					for (var i = 0; i < context.data.smartctl.length; i++) {
+						context.sysinfo.smartctl[i] = {
+							name: context.data.smartctl[i].name,
+							smartStatusPassed: context.data.smartctl[i].smartStatusPassed,
+							powerOnTime: context.data.smartctl[i].powerOnTime,
+							powerCycleCount: context.data.smartctl[i].powerCycleCount,
+							temp: context.data.smartctl[i].temp,
+							attributes: []
+						};
+
+						for (var j = 0; j < context.data.smartctl[i].attributes.length; j++) {
+							context.sysinfo.smartctl[i].attributes[j] = {
+								name: context.data.smartctl[i].attributes[j].name,
+								value: context.data.smartctl[i].attributes[j].value,
+								worst: context.data.smartctl[i].attributes[j].worst,
+								raw: context.data.smartctl[i].attributes[j].raw,
+								flags: context.data.smartctl[i].attributes[j].flags,
+							}
+						}
+					}
+				}
+
 				context.makeRefresh();
 			},
 			error: () => {
