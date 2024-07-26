@@ -21,12 +21,13 @@ type SmartStatus struct {
 }
 
 type Flags struct {
-	Prefailure    bool `json:"prefailure"`
-	UpdatedOnline bool `json:"updated_online"`
-	Performance   bool `json:"performance"`
-	ErrorRate     bool `json:"error_rate"`
-	EventCount    bool `json:"event_count"`
-	AutoKeep      bool `json:"auto_keep"`
+	String        string `json:"string"`
+	Prefailure    bool   `json:"prefailure"`
+	UpdatedOnline bool   `json:"updated_online"`
+	Performance   bool   `json:"performance"`
+	ErrorRate     bool   `json:"error_rate"`
+	EventCount    bool   `json:"event_count"`
+	AutoKeep      bool   `json:"auto_keep"`
 }
 
 type Raw struct {
@@ -50,6 +51,14 @@ type AtaSmartAttributes struct {
 	Table    []Attribute `json:"table"`
 }
 
+type PowerOnTime struct {
+	Hours int `json:"hours"`
+}
+
+type Temperature struct {
+	Current int `json:"current"`
+}
+
 type SmartctlOutput struct {
 	Smartctl           Smartctl           `json:"smartctl"`
 	Devices            []Device           `json:"devices"`
@@ -57,6 +66,9 @@ type SmartctlOutput struct {
 	SmartStatus        SmartStatus        `json:"smart_status"`
 	AtaSmartAttributes AtaSmartAttributes `json:"ata_smart_attributes"`
 	SmartctlExitStatus int                `json:"smartctl_exit_status"`
+	PowerOnTime        PowerOnTime        `json:"power_on_time"`
+	PowerCycleCount    int                `json:"power_cycle_count"`
+	Temperature        Temperature        `json:"temperature"`
 }
 
 func (s *SmartctlOutput) parse(data []byte) error {

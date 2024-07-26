@@ -13,9 +13,9 @@ Options:
 	-w, --widget-layout [LAYOUT]	custom layout of widgets
 
 Widgets:
-	cpu, diskstats, diskusage, memory, netspeed, system, temps, top
+	cpu, diskstats, diskusage, memory, netspeed, smartctl, system, temps, top
 
-	default: 'cpu diskusage\n memory system\n temps netspeed\n top diskstats'
+	default: 'cpu diskusage\n memory system\n temps netspeed\n top diskstats\n smartctl'
 ```
 
 ![](screenshot.png)

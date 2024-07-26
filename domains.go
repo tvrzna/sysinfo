@@ -38,6 +38,7 @@ type SysinfoDomain struct {
 	Netspeed  []*NetspeedDomain   `json:"netspeed,omitempty"`
 	Top       []*ProcDomain       `json:"top,omitempty"`
 	Diskstats []*DiskstatDomain   `json:"diskstats,omitempty"`
+	Smartctl  []*SmartctlDomain   `json:"smartctl,omitempty"`
 }
 
 type CpuDomain struct {
@@ -120,6 +121,23 @@ type DiskstatDomain struct {
 	Write        float64    `json:"write"`
 	WriteUnit    MemoryUnit `json:"writeUnit"`
 	WritePercent float64    `json:"writePercent"`
+}
+
+type SmartctlDomain struct {
+	Name              string                    `json:"name"`
+	SmartStatusPassed bool                      `json:"smartStatusPassed"`
+	PowerOnTime       int                       `json:"powerOnTime"`
+	PowerCycleCount   int                       `json:"powerCycleCount"`
+	Temperature       int                       `json:"temp"`
+	Attributes        []SmartctlAttributeDomain `json:"attributes"`
+}
+
+type SmartctlAttributeDomain struct {
+	Name  string `json:"name"`
+	Value int    `json:"value"`
+	Worst int    `json:"worst"`
+	Raw   int    `json:"raw"`
+	Flags string `json:"flags"`
 }
 
 func (n *NetspeedDomain) tidyValues() {

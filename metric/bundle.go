@@ -1,5 +1,7 @@
 package metric
 
+import "github.com/tvrzna/sysinfo/metric/smartctl"
+
 type Bundle struct {
 	Cpu       *Cpu
 	Cpufreq   []*Cpufreq
@@ -11,4 +13,5 @@ type Bundle struct {
 	Netspeed  []*Netspeed
 	Top       map[int]*TopProcess
 	Diskstats []*Diskstat
+	Smartctl  []*smartctl.SmartctlOutput
 }

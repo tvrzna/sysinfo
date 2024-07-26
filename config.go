@@ -15,7 +15,7 @@ import (
 
 var buildVersion string
 
-var knownWidgets = []string{"cpu", "diskstats", "diskusage", "memory", "netspeed", "system", "temps", "top"}
+var knownWidgets = []string{"cpu", "diskstats", "diskusage", "memory", "netspeed", "smartctl", "system", "temps", "top"}
 
 type config struct {
 	name         string
@@ -29,7 +29,7 @@ type config struct {
 func loadConfig(arg []string) *config {
 	c := &config{"sysinfo", "", "", 1700, make([][]string, 0), make(map[string]bool)}
 
-	strWidgets := "cpu diskusage\\n memory system\\n temps netspeed\\n top diskstats"
+	strWidgets := "cpu diskusage\\n memory system\\n temps netspeed\\n top diskstats\\n smartctl"
 
 	args.ParseArgs(arg, func(arg, value string) {
 		switch arg {

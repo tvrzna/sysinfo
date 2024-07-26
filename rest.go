@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"math"
 	"net/http"
 	"sort"
@@ -9,17 +10,24 @@ import (
 	"time"
 
 	"github.com/tvrzna/sysinfo/metric"
+	"github.com/tvrzna/sysinfo/metric/smartctl"
 )
 
 type restContext struct {
 	conf     *config
 	m        *sync.Mutex
+	s        *smartctl.SmartctlContext
 	lastLoad int64
 	sysinfo  *SysinfoDomain
 }
 
 func initRestContext(conf *config) *restContext {
-	return &restContext{m: &sync.Mutex{}, conf: conf}
+	var s *smartctl.SmartctlContext
+	if conf.widgetsIndex["smartctl"] {
+		s = smartctl.CreateSmartctlContext()
+	}
+
+	return &restContext{m: &sync.Mutex{}, conf: conf, s: s}
 }
 
 func (c *restContext) HandleSysinfoData(w http.ResponseWriter, r *http.Request) {
@@ -132,6 +140,20 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 		}
 	}
 
+	// Set smartctl data
+	if c.conf.widgetsIndex["smartctl"] {
+		result.Smartctl = make([]*SmartctlDomain, 0)
+		for _, s := range bundle.Smartctl {
+			device := &SmartctlDomain{Name: s.Device.Name, SmartStatusPassed: s.SmartStatus.Passed, PowerOnTime: s.PowerOnTime.Hours, PowerCycleCount: s.PowerCycleCount, Temperature: s.Temperature.Current, Attributes: make([]SmartctlAttributeDomain, 0)}
+			for _, a := range s.AtaSmartAttributes.Table {
+				attr := SmartctlAttributeDomain{Name: a.Name, Value: a.Value, Worst: a.Worst, Raw: a.Raw.Value, Flags: a.Flags.String}
+				device.Attributes = append(device.Attributes, attr)
+
+			}
+			result.Smartctl = append(result.Smartctl, device)
+		}
+	}
+
 	return result
 }
 
@@ -173,6 +195,13 @@ func (c *restContext) loadMetrics() *metric.Bundle {
 	}
 	if c.conf.widgetsIndex["diskusage"] {
 		bundle.Diskusage = metric.LoadDiskUsage()
+	}
+	if c.conf.widgetsIndex["smartctl"] {
+		var err error
+		bundle.Smartctl, err = c.s.GetReports()
+		if err != nil {
+			log.Print(err)
+		}
 	}
 
 	return bundle
