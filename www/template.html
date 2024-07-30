@@ -105,7 +105,7 @@
 {{ define "smartctl" }}
 <div class="smartctl">
 	<div ajsf-repeat="sysinfo.smartctl">
-		<span ajsf-text="item.name"></span>
+		<span ajsf-text="item.name | suffix ' (' | suffix item.model | suffix ')'"></span>
 		<span ajsf-text="'smart status:' | suffix item.smartStatusPassed | suffix ', pon time: ' | suffix item.powerOnTime | suffix ', power cycles: ' | suffix item.powerCycleCount | suffix ', temp: ' | suffix item.temp | suffix '°C'"></span>
 		<table>
 			<tr>

@@ -125,6 +125,7 @@ type DiskstatDomain struct {
 
 type SmartctlDomain struct {
 	Name              string                    `json:"name"`
+	Model             string                    `json:"model"`
 	SmartStatusPassed bool                      `json:"smartStatusPassed"`
 	PowerOnTime       int                       `json:"powerOnTime"`
 	PowerCycleCount   int                       `json:"powerCycleCount"`

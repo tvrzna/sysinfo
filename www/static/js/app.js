@@ -179,6 +179,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					for (var i = 0; i < context.data.smartctl.length; i++) {
 						context.sysinfo.smartctl[i] = {
 							name: context.data.smartctl[i].name,
+							model: context.data.smartctl[i].model,
 							smartStatusPassed: context.data.smartctl[i].smartStatusPassed,
 							powerOnTime: context.data.smartctl[i].powerOnTime,
 							powerCycleCount: context.data.smartctl[i].powerCycleCount,

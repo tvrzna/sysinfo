@@ -144,7 +144,7 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 	if c.conf.widgetsIndex["smartctl"] {
 		result.Smartctl = make([]*SmartctlDomain, 0)
 		for _, s := range bundle.Smartctl {
-			device := &SmartctlDomain{Name: s.Device.Name, SmartStatusPassed: s.SmartStatus.Passed, PowerOnTime: s.PowerOnTime.Hours, PowerCycleCount: s.PowerCycleCount, Temperature: s.Temperature.Current, Attributes: make([]SmartctlAttributeDomain, 0)}
+			device := &SmartctlDomain{Name: s.Device.Name, Model: s.ModelName, SmartStatusPassed: s.SmartStatus.Passed, PowerOnTime: s.PowerOnTime.Hours, PowerCycleCount: s.PowerCycleCount, Temperature: s.Temperature.Current, Attributes: make([]SmartctlAttributeDomain, 0)}
 			for _, a := range s.AtaSmartAttributes.Table {
 				attr := SmartctlAttributeDomain{Name: a.Name, Value: a.Value, Worst: a.Worst, Raw: a.Raw.Value, Flags: a.Flags.String}
 				device.Attributes = append(device.Attributes, attr)

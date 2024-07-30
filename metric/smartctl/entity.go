@@ -63,6 +63,7 @@ type SmartctlOutput struct {
 	Smartctl           Smartctl           `json:"smartctl"`
 	Devices            []Device           `json:"devices"`
 	Device             Device             `json:"device"`
+	ModelName          string             `json:"model_name"`
 	SmartStatus        SmartStatus        `json:"smart_status"`
 	AtaSmartAttributes AtaSmartAttributes `json:"ata_smart_attributes"`
 	SmartctlExitStatus int                `json:"smartctl_exit_status"`

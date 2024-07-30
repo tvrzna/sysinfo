@@ -94,7 +94,7 @@ func startShortTest(device string) error {
 }
 
 func getHealthAndAttributes(device string) (*SmartctlOutput, error) {
-	output, err := runSmartctl("-AH", device)
+	output, err := runSmartctl("-AHi", device)
 	if err != nil {
 		return nil, err
 	}
