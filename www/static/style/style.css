@@ -215,6 +215,7 @@ bar {
 table {
 	border-collapse: collapse;
 	overflow: hidden;
+	table-layout: fixed;
 	width: 100%;
 	word-wrap: break-word;
 }
@@ -227,10 +228,6 @@ table tr th, table tr td {
 
 table tr:nth-child(even) {
 	background-color: #FFFFFF10;
-}
-
-.top table {
-	table-layout: fixed;
 }
 
 .top table tr th:last-child, .top table tr td:last-child {
@@ -272,6 +269,10 @@ table tr:nth-child(even) {
 	margin-top: 0.5rem;
 }
 
+.smartctl table tr th:first-child, .smartctl table tr td:first-child, .smartctl table tr th:nth-child(4), .smartctl table tr td:nth-child(4) {
+	width: auto !important;
+}
+
 #footer {
 	color: #FFFFFF40;
 	font-size: 0.625rem;
@@ -295,6 +296,10 @@ table tr:nth-child(even) {
 
 	.system > div {
 		padding: 0.125rem;
+	}
+
+	.smartctl > div {
+		max-width: initial;
 	}
 
 	#footer {
