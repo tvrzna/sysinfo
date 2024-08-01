@@ -28,12 +28,18 @@ type Diskstat struct {
 	Write      float64
 }
 
+func (d *Diskstat) isEmpty() bool {
+	return d.Riops == 0 && d.Read == 0 && d.Wiops == 0 && d.Write == 0
+}
+
 func LoadDiskstats(wg *sync.WaitGroup, bundle *Bundle) {
 	previous := loadDiskstats()
 	time.Sleep(500 * time.Millisecond)
-	bundle.Diskstats = loadDiskstats()
+	current := loadDiskstats()
 
-	for _, b := range bundle.Diskstats {
+	bundle.Diskstats = make([]*Diskstat, 0)
+
+	for _, b := range current {
 		var p *Diskstat
 		for _, i := range previous {
 			if b.Name == i.Name {
@@ -41,13 +47,14 @@ func LoadDiskstats(wg *sync.WaitGroup, bundle *Bundle) {
 				break
 			}
 		}
-		if p == nil {
+		if p == nil || (b.isEmpty() && p.isEmpty()) {
 			continue
 		}
 		b.Riops = b.Riops - p.Riops
 		b.Read = (b.Read - p.Read) * 2 * float64(512)
 		b.Wiops = b.Wiops - p.Wiops
 		b.Write = (b.Write - p.Write) * 2 * float64(512)
+		bundle.Diskstats = append(bundle.Diskstats, b)
 	}
 	wg.Done()
 }
