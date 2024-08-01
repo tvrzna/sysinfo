@@ -148,7 +148,10 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 			for _, a := range s.AtaSmartAttributes.Table {
 				attr := SmartctlAttributeDomain{Name: a.Name, Value: a.Value, Worst: a.Worst, Raw: a.Raw.Value, Flags: a.Flags.String}
 				device.Attributes = append(device.Attributes, attr)
-
+			}
+			if s.NVMeSmartHealthInformationLog != nil {
+				n := s.NVMeSmartHealthInformationLog
+				device.Nvme = &SmartctlNVME{n.CriticalWarning, n.Temperature, n.AvailableSpare, n.AvailableSpareThreshold, n.PercentageUsed, n.DataUnitsRead, n.DataUnitsWritten, n.HostReadCommands, n.HostWriteCommands, n.ControllerBusyTime, n.PowerCycles, n.PowerOnHours, n.UnsafeShutdowns, n.MediaErrors, n.NumErrLogEntries, n.WarningTempTime, n.CriticalCompTime, n.TemperatureSensors}
 			}
 			result.Smartctl = append(result.Smartctl, device)
 		}

@@ -82,7 +82,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 							context.sysinfo.tempDevices[i].temps[j] = {
 								label: context.data.temps[i].sensors[j].temp.toFixed(0) + '°C',
 								legend: context.data.temps[i].sensors[j].name,
-								percent: context.data.temps[i].sensors[j].temp/130*100
+								percent: context.data.temps[i].sensors[j].temp / 130 * 100
 							};
 						}
 					}
@@ -113,15 +113,15 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 						context.sysinfo.netspeed[i] = {
 							name: context.data.netspeed[i].name,
 							data: [{
-									label: context.data.netspeed[i].download.toFixed(1) + context.data.netspeed[i].downloadUnit,
-									legend: 'D',
-									percent: context.data.netspeed[i].downloadPercent
-								},
-								{
-									label: context.data.netspeed[i].upload.toFixed(1) + context.data.netspeed[i].uploadUnit,
-									legend: 'U',
-									percent: context.data.netspeed[i].uploadPercent
-								}
+								label: context.data.netspeed[i].download.toFixed(1) + context.data.netspeed[i].downloadUnit,
+								legend: 'D',
+								percent: context.data.netspeed[i].downloadPercent
+							},
+							{
+								label: context.data.netspeed[i].upload.toFixed(1) + context.data.netspeed[i].uploadUnit,
+								legend: 'U',
+								percent: context.data.netspeed[i].uploadPercent
+							}
 							]
 						}
 					}
@@ -216,7 +216,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 
 		var coresHeight = 0;
 		var coresCount = 0;
-		$(rootElement).find(".cpu-cores > bar").each(function(i, el){
+		$(rootElement).find(".cpu-cores > bar").each(function (i, el) {
 			coresHeight += el.offsetHeight;
 			coresCount++;
 		});
@@ -230,7 +230,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 			multiplier = 32;
 		}
 
-		$(rootElement).find('.cpu-cores').attr("style", "max-height: " + coresHeight/Math.floor(coresCount/multiplier) + "px;");
+		$(rootElement).find('.cpu-cores').attr("style", "max-height: " + coresHeight / Math.floor(coresCount / multiplier) + "px;");
 	};
 
 	context.changeInterval = () => {
@@ -247,7 +247,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 	context.interval = setInterval(context.loadData, Number(context.intervalValue));
 });
 
-app.directive('circle',`<div class="circle" ajsf-title="model.legend | suffix ' '| suffix model.label"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {
+app.directive('circle', `<div class="circle" ajsf-title="model.legend | suffix ' '| suffix model.label"><div class="circle-inner" ajsf-text="model.label"></div><span class="circle-legend" ajsf-text="model.legend"></span></div>`, (context, el) => {
 	context.onRefresh = () => {
 		if (context.model == undefined) {
 			return;
@@ -265,7 +265,7 @@ app.directive('circle',`<div class="circle" ajsf-title="model.legend | suffix ' 
 			size = 2
 		}
 
-		$(el).find('.circle').attr('style', "--progress: " + context.model.percent +"; --fgColor: " + context.model.fgColor + "; --bgColor: " + context.model.bgColor + "; --size: " + size + "rem;");
+		$(el).find('.circle').attr('style', "--progress: " + context.model.percent + "; --fgColor: " + context.model.fgColor + "; --bgColor: " + context.model.bgColor + "; --size: " + size + "rem;");
 	};
 });
 
@@ -283,9 +283,9 @@ app.directive('bar', `<div class="bar" ajsf-title="model.legend | suffix ' '| su
 		}
 
 		var size = $(el).attr("size");
-			if (size == undefined) {
-				size = 6
-			}
+		if (size == undefined) {
+			size = 6
+		}
 
 		$(el).find('.bar').attr('style', "--progress: " + context.model.percent + "%; --fgColor: " + context.model.fgColor + "; --bgColor: " + context.model.bgColor + "; --size: " + size + "rem;");
 	};

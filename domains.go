@@ -131,6 +131,7 @@ type SmartctlDomain struct {
 	PowerCycleCount   int                       `json:"powerCycleCount"`
 	Temperature       int                       `json:"temp"`
 	Attributes        []SmartctlAttributeDomain `json:"attributes"`
+	Nvme              *SmartctlNVME             `json:"nvme,omitempty"`
 }
 
 type SmartctlAttributeDomain struct {
@@ -139,6 +140,27 @@ type SmartctlAttributeDomain struct {
 	Worst int    `json:"worst"`
 	Raw   int    `json:"raw"`
 	Flags string `json:"flags"`
+}
+
+type SmartctlNVME struct {
+	CriticalWarning         int   `json:"criticalWarning"`
+	Temperature             int   `json:"temperature"`
+	AvailableSpare          int   `json:"availableSpare"`
+	AvailableSpareThreshold int   `json:"availableSpareThreshold"`
+	PercentageUsed          int   `json:"percentageUsed"`
+	DataUnitsRead           int   `json:"dataUnitsRead"`
+	DataUnitsWritten        int   `json:"dataUnitsWritten"`
+	HostReadCommands        int   `json:"hostReadCommands"`
+	HostWriteCommands       int   `json:"hostWriteCommands"`
+	ControllerBusyTime      int   `json:"controllerBusyTime"`
+	PowerCycles             int   `json:"powerCycles"`
+	PowerOnHours            int   `json:"powerOnHours"`
+	UnsafeShutdowns         int   `json:"unsafeShutdowns"`
+	MediaErrors             int   `json:"mediaErrors"`
+	NumErrLogEntries        int   `json:"numErrLogEntries"`
+	WarningTempTime         int   `json:"warningTempTime"`
+	CriticalCompTime        int   `json:"criticalCompTime"`
+	TemperatureSensors      []int `json:"temperatureSensors"`
 }
 
 func (n *NetspeedDomain) tidyValues() {
