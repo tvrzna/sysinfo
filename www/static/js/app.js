@@ -99,6 +99,10 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					}
 				}
 
+				if (context.data.updates != undefined) {
+					context.sysinfo.updates = context.data.updates;
+				}
+
 				if (context.data.uptime != undefined) {
 					var days = Math.floor(context.data.uptime / 60 / 60 / 24);
 					var hours = Math.floor((context.data.uptime / 60 / 60)) - days * 24;

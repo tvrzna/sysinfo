@@ -77,6 +77,7 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 	if c.conf.widgetsIndex["system"] {
 		result.Loadavg = &LoadavgDomain{Loadavg1: bundle.Loadavg.Loadavg1, Loadavg5: bundle.Loadavg.Loadavg5, Loadavg15: bundle.Loadavg.Loadavg15}
 		result.Uptime = bundle.Uptime
+		result.Updates = bundle.Updates
 	}
 
 	// Set temps
@@ -173,6 +174,9 @@ func (c *restContext) loadMetrics() *metric.Bundle {
 	}
 	if c.conf.widgetsIndex["diskstats"] {
 		parallelMetrics = append(parallelMetrics, metric.LoadDiskstats)
+	}
+	if c.conf.widgetsIndex["system"] {
+		parallelMetrics = append(parallelMetrics, metric.LoadPkgUpdates)
 	}
 
 	bundle := &metric.Bundle{}

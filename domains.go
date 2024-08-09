@@ -39,6 +39,7 @@ type SysinfoDomain struct {
 	Top       []*ProcDomain       `json:"top,omitempty"`
 	Diskstats []*DiskstatDomain   `json:"diskstats,omitempty"`
 	Smartctl  []*SmartctlDomain   `json:"smartctl,omitempty"`
+	Updates   int                 `json:"updates"`
 }
 
 type CpuDomain struct {

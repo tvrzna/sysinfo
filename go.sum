@@ -1,2 +1,4 @@
 github.com/tvrzna/go-utils/args v0.0.2 h1:x1cPDtgdCeWTrSt3QHiU+tCiyr5JNBpasrnMZ5Npa3Y=
 github.com/tvrzna/go-utils/args v0.0.2/go.mod h1:LD8ey0IbYFEatYvyjy2Jf45ywuLnKZKbAtj8ndT0C9k=
+github.com/tvrzna/pkgtray/checker v0.1.1 h1:u4f+k5PDJUG5fD+Y5xsVxzJHLrqZAi0BRN2W2p/9b/o=
+github.com/tvrzna/pkgtray/checker v0.1.1/go.mod h1:9tjlbJ3wcNufXp6cfQi4PB/hq8bG8AyHJ4YEQXQlPrc=

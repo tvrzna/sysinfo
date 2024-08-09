@@ -14,4 +14,5 @@ type Bundle struct {
 	Top       map[int]*TopProcess
 	Diskstats []*Diskstat
 	Smartctl  []*smartctl.SmartctlOutput
+	Updates   int
 }
