@@ -12,6 +12,7 @@ import (
 type pkgUpdates struct {
 	disabled  bool
 	lastCheck int64
+	updates   int
 	manager   *pkgManager
 }
 
@@ -32,10 +33,11 @@ func LoadPkgUpdates(wg *sync.WaitGroup, bundle *Bundle) {
 		wg.Done()
 	}
 
-	if pUpdates.lastCheck+3600 <= time.Now().Unix() {
-		bundle.Updates = checker.CheckPackages(pUpdates.manager.pkgType, pUpdates.manager.path)
+	if pUpdates.lastCheck+600 <= time.Now().Unix() {
+		pUpdates.updates = checker.CheckPackages(pUpdates.manager.pkgType, pUpdates.manager.path)
 		pUpdates.lastCheck = time.Now().Unix()
 	}
+	bundle.Updates = pUpdates.updates
 
 	wg.Done()
 }
