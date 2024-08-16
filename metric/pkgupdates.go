@@ -14,6 +14,7 @@ type pkgUpdates struct {
 	lastCheck int64
 	updates   int
 	manager   *pkgManager
+	mutex     *sync.Mutex
 }
 
 type pkgManager struct {
@@ -23,27 +24,19 @@ type pkgManager struct {
 	pkgType checker.EnPkgManager
 }
 
-var pUpdates *pkgUpdates
+var pUpdates *pkgUpdates = &pkgUpdates{mutex: &sync.Mutex{}}
 
-func LoadPkgUpdates(wg *sync.WaitGroup, bundle *Bundle) {
-	if pUpdates == nil {
-		initPkgUpdates()
+func LoadPkgUpdates() int {
+	if pUpdates != nil && pUpdates.disabled {
+		return 0
 	}
-	if pUpdates.disabled {
-		wg.Done()
+	if pUpdates.mutex.TryLock() {
+		go pUpdates.update()
 	}
-
-	if pUpdates.lastCheck+600 <= time.Now().Unix() {
-		pUpdates.updates = checker.CheckPackages(pUpdates.manager.pkgType, pUpdates.manager.path)
-		pUpdates.lastCheck = time.Now().Unix()
-	}
-	bundle.Updates = pUpdates.updates
-
-	wg.Done()
+	return pUpdates.updates
 }
 
 func initPkgUpdates() {
-	p := &pkgUpdates{}
 	xbpsPkgMngr := pkgManager{"xbps", "xbps-install", "", checker.Xbps}
 	pacmanPkgMngr := pkgManager{"pacman", "checkupdates", "", checker.Pacman}
 	apkPkgMngr := pkgManager{"apk", "apk", "", checker.Apk}
@@ -55,14 +48,23 @@ func initPkgUpdates() {
 		path, err := exec.LookPath(pkgManager.command)
 		if err == nil {
 			pkgManager.path = path
-			p.manager = &pkgManager
+			pUpdates.manager = &pkgManager
 			break
 		}
 	}
-	if p.manager == nil {
+	if pUpdates.manager == nil {
 		log.Print("pkgupdates: no suitable package manager found")
-		p.disabled = true
+		pUpdates.disabled = true
 	}
+}
 
-	pUpdates = p
+func (p *pkgUpdates) update() {
+	if p == nil || p.lastCheck == 0 {
+		initPkgUpdates()
+	}
+	if p != nil && !p.disabled && p.lastCheck+600 <= time.Now().Unix() {
+		p.updates = checker.CheckPackages(p.manager.pkgType, p.manager.path)
+		p.lastCheck = time.Now().Unix()
+	}
+	p.mutex.Unlock()
 }

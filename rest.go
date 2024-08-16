@@ -175,9 +175,6 @@ func (c *restContext) loadMetrics() *metric.Bundle {
 	if c.conf.widgetsIndex["diskstats"] {
 		parallelMetrics = append(parallelMetrics, metric.LoadDiskstats)
 	}
-	if c.conf.widgetsIndex["system"] {
-		parallelMetrics = append(parallelMetrics, metric.LoadPkgUpdates)
-	}
 
 	bundle := &metric.Bundle{}
 	wg := &sync.WaitGroup{}
@@ -193,6 +190,7 @@ func (c *restContext) loadMetrics() *metric.Bundle {
 	if c.conf.widgetsIndex["system"] {
 		bundle.Loadavg = metric.GetLoadavg()
 		bundle.Uptime = metric.LoadUptime()
+		bundle.Updates = metric.LoadPkgUpdates()
 	}
 	if c.conf.widgetsIndex["memory"] {
 		bundle.Mem = metric.LoadMemInfo()
