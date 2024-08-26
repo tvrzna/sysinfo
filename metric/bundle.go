@@ -5,7 +5,6 @@ import "github.com/tvrzna/sysinfo/metric/smartctl"
 type Bundle struct {
 	Cpu       *Cpu
 	Cpufreq   []*Cpufreq
-	Loadavg   *Loadavg
 	Mem       *MemoryInfo
 	Temps     []*TempDevice
 	Diskusage []*DiskUsage
@@ -14,5 +13,5 @@ type Bundle struct {
 	Top       map[int]*TopProcess
 	Diskstats []*Diskstat
 	Smartctl  []*smartctl.SmartctlOutput
-	Updates   int
+	System    *System
 }

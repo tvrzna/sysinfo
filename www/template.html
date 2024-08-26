@@ -129,18 +129,21 @@
 {{ define "system" }}
 <div class="system">
 	<div>
+		<span ajsf-text="sysinfo.system.hostname | suffix ' (' | suffix sysinfo.system.ostype | suffix ' ' | suffix sysinfo.system.osrelease | suffix ')'"></span>
+	</div>
+	<div>
 		Load Average:
-		<span ajsf-text="sysinfo.loadavg1"></span>
-		<span ajsf-text="sysinfo.loadavg5"></span>
-		<span ajsf-text="sysinfo.loadavg15"></span>
+		<span ajsf-text="sysinfo.system.loadavg1"></span>
+		<span ajsf-text="sysinfo.system.loadavg5"></span>
+		<span ajsf-text="sysinfo.system.loadavg15"></span>
 	</div>
 	<div>
 		Uptime:
-		<span ajsf-text="sysinfo.uptime"></span>
+		<span ajsf-text="sysinfo.system.uptime"></span>
 	</div>
 	<div>
 		Pending Updates:
-		<span ajsf-text="sysinfo.updates"></span>
+		<span ajsf-text="sysinfo.system.updates"></span>
 	</div>
 </div>
 {{ end }}

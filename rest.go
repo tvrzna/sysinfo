@@ -75,9 +75,14 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 
 	// Set system
 	if c.conf.widgetsIndex["system"] {
-		result.Loadavg = &LoadavgDomain{Loadavg1: bundle.Loadavg.Loadavg1, Loadavg5: bundle.Loadavg.Loadavg5, Loadavg15: bundle.Loadavg.Loadavg15}
-		result.Uptime = bundle.Uptime
-		result.Updates = bundle.Updates
+		result.System = &SystemDomain{
+			&LoadavgDomain{Loadavg1: bundle.System.Loadavg.Loadavg1, Loadavg5: bundle.System.Loadavg.Loadavg5, Loadavg15: bundle.System.Loadavg.Loadavg15},
+			bundle.System.Uptime,
+			bundle.System.Updates,
+			bundle.System.Hostname,
+			bundle.System.OsType,
+			bundle.System.OsRelease,
+		}
 	}
 
 	// Set temps
@@ -188,9 +193,14 @@ func (c *restContext) loadMetrics() *metric.Bundle {
 		bundle.Cpufreq = metric.LoadCpufreq()
 	}
 	if c.conf.widgetsIndex["system"] {
-		bundle.Loadavg = metric.GetLoadavg()
-		bundle.Uptime = metric.LoadUptime()
-		bundle.Updates = metric.LoadPkgUpdates()
+		bundle.System = &metric.System{
+			Loadavg:   metric.GetLoadavg(),
+			Uptime:    metric.LoadUptime(),
+			Updates:   metric.LoadPkgUpdates(),
+			Hostname:  metric.LoadHostname(),
+			OsType:    metric.LoadOsType(),
+			OsRelease: metric.LoadOsRelease(),
+		}
 	}
 	if c.conf.widgetsIndex["memory"] {
 		bundle.Mem = metric.LoadMemInfo()

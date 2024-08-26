@@ -65,10 +65,24 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					}
 				}
 
-				if (context.data.loadavg != undefined) {
-					context.sysinfo.loadavg1 = context.data.loadavg.loadavg1.toFixed(2);
-					context.sysinfo.loadavg5 = context.data.loadavg.loadavg5.toFixed(2);
-					context.sysinfo.loadavg15 = context.data.loadavg.loadavg15.toFixed(2);
+				if (context.data.system != undefined) {
+					context.sysinfo.system = {};
+
+					context.sysinfo.system.loadavg1 = context.data.system.loadavg.loadavg1.toFixed(2);
+					context.sysinfo.system.loadavg5 = context.data.system.loadavg.loadavg5.toFixed(2);
+					context.sysinfo.system.loadavg15 = context.data.system.loadavg.loadavg15.toFixed(2);
+
+					var days = Math.floor(context.data.system.uptime / 60 / 60 / 24);
+					var hours = Math.floor((context.data.system.uptime / 60 / 60)) - days * 24;
+					var minutes = Math.floor(context.data.system.uptime / 60) - (days * 24 + hours) * 60;
+					var seconds = context.data.system.uptime - ((days * 24 + hours) * 60 + minutes) * 60;
+					context.sysinfo.system.uptime = (days > 0 ? days + ' days, ' : '') + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+
+					context.sysinfo.system.updates = context.data.system.updates;
+
+					context.sysinfo.system.hostname = context.data.system.hostname;
+					context.sysinfo.system.ostype = context.data.system.ostype;
+					context.sysinfo.system.osrelease = context.data.system.osrelease;
 				}
 
 				if (context.data.temps != undefined) {
@@ -100,15 +114,7 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 				}
 
 				if (context.data.updates != undefined) {
-					context.sysinfo.updates = context.data.updates;
-				}
 
-				if (context.data.uptime != undefined) {
-					var days = Math.floor(context.data.uptime / 60 / 60 / 24);
-					var hours = Math.floor((context.data.uptime / 60 / 60)) - days * 24;
-					var minutes = Math.floor(context.data.uptime / 60) - (days * 24 + hours) * 60;
-					var seconds = context.data.uptime - ((days * 24 + hours) * 60 + minutes) * 60;
-					context.sysinfo.uptime = (days > 0 ? days + ' days, ' : '') + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
 				}
 
 				if (context.data.netspeed != undefined) {

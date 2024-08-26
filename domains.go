@@ -31,15 +31,13 @@ type SysinfoDomain struct {
 	CPU       *CpuDomain          `json:"cpu,omitempty"`
 	RAM       *MemoryDomain       `json:"ram,omitempty"`
 	SWAP      *MemoryDomain       `json:"swap,omitempty"`
-	Loadavg   *LoadavgDomain      `json:"loadavg,omitempty"`
 	Temps     []*TempDeviceDomain `json:"temps,omitempty"`
 	DiskUsage []*DiskUsageDomain  `json:"diskusage,omitempty"`
-	Uptime    uint64              `json:"uptime,omitempty"`
 	Netspeed  []*NetspeedDomain   `json:"netspeed,omitempty"`
 	Top       []*ProcDomain       `json:"top,omitempty"`
 	Diskstats []*DiskstatDomain   `json:"diskstats,omitempty"`
 	Smartctl  []*SmartctlDomain   `json:"smartctl,omitempty"`
-	Updates   int                 `json:"updates"`
+	System    *SystemDomain       `json:"system,omitempty"`
 }
 
 type CpuDomain struct {
@@ -162,6 +160,15 @@ type SmartctlNVME struct {
 	WarningTempTime         int   `json:"warningTempTime"`
 	CriticalCompTime        int   `json:"criticalCompTime"`
 	TemperatureSensors      []int `json:"temperatureSensors"`
+}
+
+type SystemDomain struct {
+	Loadavg   *LoadavgDomain `json:"loadavg,omitempty"`
+	Uptime    uint64         `json:"uptime,omitempty"`
+	Updates   int            `json:"updates"`
+	Hostname  string         `json:"hostname"`
+	OsType    string         `json:"ostype"`
+	OsRelease string         `json:"osrelease"`
 }
 
 func (n *NetspeedDomain) tidyValues() {
