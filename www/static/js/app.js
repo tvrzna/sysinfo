@@ -106,7 +106,9 @@ var app = ajsf('sysinfo', (context, rootElement) => {
 					context.sysinfo.diskusage = [];
 					for (var i = 0; i < context.data.diskusage.length; i++) {
 						context.sysinfo.diskusage[i] = {
-							label: context.data.diskusage[i].used.toFixed(0) + context.data.diskusage[i].usedUnit + '/' + context.data.diskusage[i].total.toFixed(0) + context.data.diskusage[i].totalUnit,
+							label: context.data.diskusage[i].used.toFixed(context.data.diskusage[i].used > 32 ? 0 : 1)+ context.data.diskusage[i].usedUnit
+								+ '/'
+								+ context.data.diskusage[i].total.toFixed(context.data.diskusage[i].total > 32 ? 0 : 1) + context.data.diskusage[i].totalUnit,
 							legend: context.data.diskusage[i].path,
 							percent: context.data.diskusage[i].percent
 						}
