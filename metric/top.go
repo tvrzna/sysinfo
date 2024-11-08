@@ -29,11 +29,13 @@ type TopProcess struct {
 	RamUsage uint64
 }
 
+var pageSize = uint64(os.Getpagesize())
+
 func (t *TopProcess) calc(p *TopProcess) {
 	if p != nil {
 		t.CpuUsage = float32(1 / (float32(t.Now-p.Now) / 1000) * float32(t.getTotal()-p.getTotal()))
 	}
-	t.RamUsage = uint64(t.RSS) * uint64(os.Getpagesize())
+	t.RamUsage = uint64(t.RSS) * pageSize
 }
 
 func (t *TopProcess) getTotal() uint64 {
@@ -77,6 +79,7 @@ func loadTop() map[int]*TopProcess {
 			p.Cstime, _ = strconv.ParseInt(data[16], 10, 64)
 			p.RSS, _ = strconv.ParseInt(data[23], 10, 64)
 			p.Now = uint64(time.Now().UnixMilli())
+
 			result[p.PID] = p
 		}
 	}
