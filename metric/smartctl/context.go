@@ -71,7 +71,7 @@ func (s *SmartctlContext) GetReports() ([]*SmartctlOutput, error) {
 func (s *SmartctlContext) runMondayTasker() {
 	for {
 		now := time.Now()
-		nextMonday := time.Date(now.Year(), now.Month(), now.Day(), 23, 0, 0, 0, now.Location())
+		nextMonday := time.Date(now.Year(), now.Month(), now.Day(), 8, 0, 0, 0, now.Location())
 		for nextMonday.Weekday() != time.Monday {
 			nextMonday = nextMonday.AddDate(0, 0, 1)
 		}
