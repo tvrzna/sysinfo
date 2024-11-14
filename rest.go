@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -144,6 +145,9 @@ func (c *restContext) loadSysinfo() *SysinfoDomain {
 			diskstat.tidyValues()
 			result.Diskstats = append(result.Diskstats, diskstat)
 		}
+		sort.Slice(result.Diskstats, func(i, j int) bool {
+			return strings.ToLower(result.Diskstats[i].Name) < strings.ToLower(result.Diskstats[j].Name)
+		})
 	}
 
 	// Set smartctl data
